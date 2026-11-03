@@ -179,17 +179,24 @@ Linhas contam o cabeçalho do CSV como linha 1.
 
 ## Com mais tempo
 
-- **Tools que executam ações:** abrir um ticket real de troca ou de reclamação, em
-  vez de orientar o cliente a chamar o WhatsApp.
+- **Avaliação automatizada:** cenários com resultado esperado (preço, PIX ×
+  promoção, prazos de troca, escopo) para comparar Haiku e Sonnet e pegar
+  regressões de prompt.
+- **Observabilidade:** registrar por conversa as tools chamadas, tokens, custo,
+  encaminhamentos e perguntas sem resposta, para achar lacunas no manual e no
+  catálogo.
+- **Tools que executam ações:** abrir ticket real de troca ou reclamação, em vez de
+  orientar o cliente a chamar o WhatsApp.
+- **Canal real:** integração com o WhatsApp, principal meio de atendimento segundo o
+  manual.
 - **Busca semântica no catálogo,** mantendo preço e estoque determinísticos (vindos
   das tools, nunca do modelo).
-- **Frete e carrinho:** cotação de frete por CEP via API de transportadora e
-  carrinho com vários produtos.
-- **Avaliação automatizada:** cenários com resultado esperado para comparar Haiku e
-  Sonnet e pegar regressões de prompt.
-- **Infraestrutura de atendimento:** dados em banco em vez de CSV, verificação de
-  identidade mais forte com limite de tentativas e transferência para atendente
-  humano.
+- **Frete e carrinho:** cotação por CEP via API de transportadora e carrinho com
+  vários produtos.
+- **Tom adaptado ao nível do cliente** (iniciante ou profissional), a partir do que
+  ele diz na conversa, sem guardar perfil.
+- **Infraestrutura:** dados em banco em vez de CSV, verificação de identidade mais
+  forte com limite de tentativas e transferência para atendente humano.
 
 ## Testes
 
