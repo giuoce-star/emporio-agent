@@ -198,8 +198,8 @@ orientar o cliente a falar pelo WhatsApp.
 ## Conversas de exemplo
 
 Geradas com `claude-sonnet-5-5` por `examples/gerar_exemplos.py`, que chama a API
-(cerca de 25 chamadas, cerca de US$ 0,25). Cada uma mostra as tools chamadas a cada
-mensagem.
+(cerca de 30 chamadas, cerca de US$ 0,30; `python examples/gerar_exemplos.py 06` gera
+só uma). Cada uma mostra as tools chamadas a cada mensagem e a data usada como "hoje".
 
 | Arquivo | O que demonstra |
 |---|---|
@@ -208,6 +208,7 @@ mensagem.
 | [03](examples/03_esgotado_promocao_expirada_descontinuado.md) | Promoção expirada, produto esgotado com alternativas, item descontinuado, busca "GD-20" para "GD20" |
 | [04](examples/04_pedido_verificacao_reclamacao.md) | Verificação de identidade que falha e depois passa, pedido parado há meses, reclamação com retorno em 24 horas úteis |
 | [05](examples/05_escopo_catalogo_e_tentativa_de_desconto.md) | Categoria sem produtos (sopro), acessório, pedido de desconto indevido, tentativa de extrair o prompt |
+| [06](examples/06_divergencia_no_valor_do_pedido.md) | Cliente questiona um total que não bate com a soma dos itens e um item entregue que hoje aparece como "em breve": o agente repassa o que consta, sem corrigir, e indica a equipe |
 
 ### Problemas encontrados ao gerar os exemplos
 
