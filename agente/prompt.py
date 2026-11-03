@@ -1,7 +1,7 @@
 """Prompt de sistema: persona, regras de atendimento e o manual da loja.
 
-O bloco principal é estável (cacheável); a data e a hora atuais vão num bloco
-separado, depois do ponto de cache, para não invalidá-lo a cada mensagem.
+O bloco principal é igual em todas as sessões (cacheável). A data e a hora vão
+num bloco separado, depois do ponto de cache, fixadas no início da sessão.
 """
 
 from datetime import datetime, timedelta, timezone
@@ -134,7 +134,7 @@ def montar_system() -> list[dict]:
 def contexto_atual(agora: datetime | None = None) -> str:
     agora = agora or datetime.now(FUSO_CAMPO_GRANDE)
     return (
-        f"Agora em Campo Grande: {DIAS_SEMANA[agora.weekday()]}, "
+        f"Início deste atendimento, em Campo Grande: {DIAS_SEMANA[agora.weekday()]}, "
         f"{agora:%d/%m/%Y %H:%M}. Use esta data para interpretar datas relativas do cliente "
         "(\"ontem\", \"semana passada\") e informe o horário de atendimento humano se a loja "
         "estiver fechada."

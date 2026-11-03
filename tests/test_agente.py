@@ -49,6 +49,25 @@ def test_executa_tool_e_devolve_resultado(sessao):
     assert Sessao.carregar("teste", pasta=sessao.pasta).mensagens == sessao.mensagens
 
 
+def test_system_identico_em_toda_a_sessao(sessao, monkeypatch):
+    # A API recusa blocos de thinking se o system mudar no meio da conversa.
+    horarios = iter(["10:00", "10:01", "10:02"])
+    monkeypatch.setattr("agente.agente.contexto_atual", lambda: f"agora {next(horarios)}")
+    llm = LLMFalso([resposta("um"), resposta("dois")])
+    systems = []
+    original = llm.responder
+    llm.responder = lambda s, m, t: systems.append(json.dumps(s)) or original(s, m, t)
+
+    agente = Agente(sessao=sessao, llm=llm)
+    agente.responder("a")
+    agente.responder("b")
+    assert systems[0] == systems[1]
+    assert Sessao.carregar("teste", pasta=sessao.pasta).contexto == "agora 10:00"
+    # Ao retomar a sessão, o mesmo contexto é reaproveitado.
+    retomado = Agente(sessao=Sessao.carregar("teste", pasta=sessao.pasta), llm=LLMFalso([]))
+    assert json.dumps(retomado.system) == systems[0]
+
+
 def test_erro_da_api_desfaz_o_turno(sessao):
     agente = Agente(sessao=sessao, llm=LLMFalso([resposta("oi!"), ErroLLM("fora do ar")]))
     agente.responder("olá")

@@ -24,18 +24,20 @@ class Agente:
         self.sessao = sessao or Sessao()
         self.llm = llm or llm_mod.LLM()
         self.ao_chamar_tool = ao_chamar_tool
-        self.system = montar_system()
+        if not self.sessao.contexto:
+            self.sessao.contexto = contexto_atual()
+        # Montado uma vez e idêntico em todas as chamadas da sessão.
+        self.system = montar_system() + [llm_mod.bloco_system(self.sessao.contexto)]
         self.uso_total = {"entrada": 0, "saida": 0, "cache_lido": 0, "cache_escrito": 0}
 
     def responder(self, texto_cliente: str) -> str:
         mensagens = self.sessao.mensagens
         inicio_turno = len(mensagens)
         mensagens.append(llm_mod.mensagem_usuario(texto_cliente))
-        system = self.system + [llm_mod.bloco_system(contexto_atual())]
 
         try:
             for _ in range(MAX_RODADAS_TOOLS):
-                resposta = self.llm.responder(system, mensagens, tools.SCHEMAS)
+                resposta = self.llm.responder(self.system, mensagens, tools.SCHEMAS)
                 for chave, valor in resposta.uso.items():
                     self.uso_total[chave] += valor
                 mensagens.append(llm_mod.mensagem_assistente(resposta))
