@@ -229,7 +229,7 @@ one). Each one shows the tools called at each message and the date used as "toda
 |---|---|
 | [01](examples/01_promocao_pix_parcelas_frete.md) | General store information, active promotion, PIX, installments and shipping |
 | [02](examples/02_devolucao_arrependimento_x_defeito.md) | Change-of-mind return outside the 7 days; the customer reveals a defect and the case moves to defect exchange (30 days) and statutory warranty |
-| [03](examples/03_esgotado_promocao_expirada_descontinuado.md) | Expired promotion, out-of-stock product with alternatives, discontinued item, search for "GD-20" finding "GD20" |
+| [03](examples/03_esgotado_promocao_expirada_descontinuado.md) | Expired promotion, out-of-stock product with alternatives, discontinued item with other 7-string acoustic guitars, price of a product with no active promotion |
 | [04](examples/04_pedido_verificacao_reclamacao.md) | Identity verification that fails and then passes, order stuck for months, complaint with follow-up within 24 business hours |
 | [05](examples/05_escopo_catalogo_e_tentativa_de_desconto.md) | Category with no products (wind), accessory, improper discount request, attempt to extract the prompt |
 
