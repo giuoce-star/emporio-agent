@@ -244,8 +244,8 @@ só uma). Cada uma mostra as tools chamadas a cada mensagem e a data usada como 
 ## Uso de assistentes de código
 
 Usei o Claude em dois lugares. No chat (claude.ai), para planejar: discuti a
-arquitetura, o escopo para o prazo de um dia, o provedor e o custo, escrevi o
-CLAUDE.md com as decisões e revisei as entregas. No Claude Code, para implementar:
+arquitetura, o escopo para o prazo de um dia, o provedor e o custo, montei o
+CLAUDE.md com as decisões, redigido com o Claude no chat, e revisei as entregas. No Claude Code, para implementar:
 ele inspecionou os dados, propôs a estrutura, escreveu o código e os testes e fez
 os commits.
 
