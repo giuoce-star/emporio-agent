@@ -177,6 +177,20 @@ Linhas contam o cabeçalho do CSV como linha 1.
   tentativas.
 - Os dados são lidos uma vez por processo; alterações nos CSVs exigem reiniciar.
 
+## Com mais tempo
+
+- **Tools que executam ações:** abrir um ticket real de troca ou de reclamação, em
+  vez de orientar o cliente a chamar o WhatsApp.
+- **Busca semântica no catálogo,** mantendo preço e estoque determinísticos (vindos
+  das tools, nunca do modelo).
+- **Frete e carrinho:** cotação de frete por CEP via API de transportadora e
+  carrinho com vários produtos.
+- **Avaliação automatizada:** cenários com resultado esperado para comparar Haiku e
+  Sonnet e pegar regressões de prompt.
+- **Infraestrutura de atendimento:** dados em banco em vez de CSV, verificação de
+  identidade mais forte com limite de tentativas e transferência para atendente
+  humano.
+
 ## Testes
 
 `pytest` roda 44 testes sem chamar a API: cálculo de preço (PIX, promoção,
