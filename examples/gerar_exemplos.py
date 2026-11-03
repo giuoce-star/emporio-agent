@@ -1,15 +1,25 @@
 """Gera as conversas de exemplo em examples/*.md.
 
-ATENÇÃO: chama a API de verdade (cerca de 20 chamadas). Rode só para
-regerar os exemplos, com o modelo da validação final:
+ATENÇÃO: chama a API de verdade (cerca de 25 chamadas). Rode só para
+regerar os exemplos. Usa claude-sonnet-5-5 (modelo da validação final) por
+padrão; MODEL no ambiente sobrescreve:
 
-    MODEL=claude-sonnet-5-5 python examples/gerar_exemplos.py
+    python examples/gerar_exemplos.py               # Sonnet, os 5 exemplos
+    python examples/gerar_exemplos.py 01 03        # só alguns
+    MODEL=claude-haiku-5-5 python examples/gerar_exemplos.py
 """
 
 import json
+import os
 import sys
 from datetime import datetime
 from pathlib import Path
+
+# Antes de importar agente.config: o load_dotenv de lá não sobrescreve variáveis
+# já definidas, então este padrão vence o MODEL do .env (Haiku, para
+# desenvolvimento), e um MODEL passado no terminal vence este padrão.
+MODELO_PADRAO_EXEMPLOS = "claude-sonnet-5-5"
+os.environ.setdefault("MODEL", MODELO_PADRAO_EXEMPLOS)
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 

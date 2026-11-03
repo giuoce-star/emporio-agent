@@ -26,6 +26,15 @@ def test_defeito_conta_da_compra_e_garantia_do_recebimento():
     assert "observacao" not in r
 
 
+def test_prompt_proibe_sugerir_excecao_de_prazo():
+    # Visto no exemplo 02: "Se quiser pedir uma exceção ... a equipe pode confirmar".
+    from agente.prompt import PERSONA_E_REGRAS
+
+    regras = " ".join(PERSONA_E_REGRAS.split())
+    assert "a política não prevê exceção" in regras
+    assert "sem sugerir que o cliente peça exceção" in regras
+
+
 def test_datas_invalidas():
     assert "erro" in tools.prazos_troca_devolucao("03/11/2026", hoje=HOJE)
     assert "erro" in tools.prazos_troca_devolucao("2026-12-01", hoje=HOJE)
