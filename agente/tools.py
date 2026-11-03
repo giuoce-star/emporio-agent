@@ -8,7 +8,7 @@ import json
 import re
 from datetime import date, timedelta
 
-from agente import precos
+from agente import config, precos
 from agente.dados import Dados, carregar, normalizar
 
 STATUS_PEDIDO = {
@@ -198,9 +198,17 @@ def consultar_preco(produto_id: int, dados: Dados | None = None) -> dict:
         resultado["descricao"] = p["description"]
         resultado["especificacoes"] = p["specs"]
     else:
-        resultado["observacao_detalhes"] = (
-            "Detalhes técnicos deste item estão em revisão no sistema; "
-            "não descreva características além do nome."
+        resultado["aviso_cadastro"] = (
+            "O cadastro deste item tem informações conflitantes (o nome não bate com a "
+            "descrição e as especificações). Informe só nome, preço e disponibilidade e diga "
+            "que a equipe confirma as especificações pelo WhatsApp (67) 3321-4500."
+        )
+
+    if p["status"] != "active" and p["stock_quantity"] > 0:
+        resultado["aviso_estoque"] = (
+            f"O sistema registra {int(p['stock_quantity'])} unidade(s) em estoque apesar do "
+            "status. Não ofereça o item; se o cliente insistir, diga que consta esse estoque "
+            "no sistema e que a equipe confirma se ainda é possível comprar."
         )
 
     if not _vendavel(p):
@@ -216,7 +224,7 @@ def prazos_troca_devolucao(
     data_recebimento: str, data_compra: str = "", hoje: date | None = None
 ) -> dict:
     """Situação de cada prazo do manual, em dias corridos, a partir das datas informadas."""
-    hoje = hoje or date.today()
+    hoje = hoje or config.hoje()
     try:
         recebimento = date.fromisoformat(data_recebimento)
         compra = date.fromisoformat(data_compra) if data_compra else None
@@ -286,7 +294,7 @@ def status_pedido(
     hoje: date | None = None,
 ) -> dict:
     dados = dados or carregar()
-    hoje = hoje or date.today()
+    hoje = hoje or config.hoje()
     falha = {
         "verificado": False,
         "erro": (
@@ -338,7 +346,53 @@ def status_pedido(
             "transparente e oriente o cliente a falar com a equipe pelo WhatsApp "
             "(67) 3321-4500 para verificar."
         )
+
+    divergencias = _divergencias_pedido(dados, pedido, itens)
+    if divergencias:
+        resultado["divergencias_no_cadastro"] = divergencias
+        resultado["como_tratar_divergencias"] = (
+            "Os valores acima são os que constam no sistema: repasse-os assim, sem corrigir. "
+            "Só mencione as divergências se o cliente perguntar sobre valor, pagamento ou "
+            "itens; nesse caso, diga o que consta e que a equipe confirma pelo WhatsApp."
+        )
     return resultado
+
+
+def _divergencias_pedido(dados: Dados, pedido, itens) -> list[str]:
+    """Inconsistências entre o pedido gravado e as regras/dados atuais. Nada é corrigido."""
+    divergencias = []
+    total = precos.dinheiro(pedido["total_brl"])
+    precos_itens = dados.produtos.loc[itens["product_id"], "price_brl"].to_numpy()
+    soma = precos.dinheiro(sum(q * p for q, p in zip(itens["quantity"], precos_itens)))
+    if total != soma:
+        divergencias.append(
+            f"O total gravado ({precos.formatar_brl(total)}) difere da soma dos itens pelos "
+            f"preços atuais ({precos.formatar_brl(soma)}); o sistema não guarda o preço da época."
+        )
+    elif pedido["payment_method"] == "pix":
+        divergencias.append(
+            "Pagamento via PIX com total igual ao preço de tabela atual dos itens, sem o "
+            "desconto de 5% do PIX."
+        )
+
+    parcelas = re.fullmatch(r"credit_(\d+)x", pedido["payment_method"])
+    if parcelas:
+        n = int(parcelas.group(1))
+        minimo = next(m for limite, m in precos.FAIXAS_PARCELAMENTO if n <= limite)
+        if total / n < minimo:
+            divergencias.append(
+                f"Parcelado em {n}x de {precos.formatar_brl(total / n)}, abaixo da parcela "
+                f"mínima atual para {n}x ({precos.formatar_brl(minimo)})."
+            )
+
+    for product_id in itens["product_id"]:
+        p = dados.produtos.loc[product_id]
+        if p["status"] != "active":
+            divergencias.append(
+                f"O item {p['name']} consta hoje no catálogo como "
+                f"\"{_disponibilidade(p)}\"."
+            )
+    return divergencias
 
 
 SCHEMAS = [

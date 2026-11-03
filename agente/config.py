@@ -1,6 +1,7 @@
 """Configuração central: caminhos, variáveis de ambiente e modelo."""
 
 import os
+from datetime import date
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -18,3 +19,22 @@ MAX_TOKENS = int(os.getenv("MAX_TOKENS", "4096"))
 EFFORT = os.getenv("EFFORT", "medium")
 # Limite de rodadas de tool use por mensagem do cliente (proteção contra loops).
 MAX_RODADAS_TOOLS = 6
+
+
+def _ler_data_referencia(valor: str | None) -> date | None:
+    valor = (valor or "").strip()
+    if not valor:
+        return None
+    try:
+        return date.fromisoformat(valor)
+    except ValueError as exc:
+        raise ValueError(f"REFERENCE_DATE inválida: {valor!r} (use AAAA-MM-DD)") from exc
+
+
+# Data usada como "hoje" (atraso de entrega, prazos de troca, data informada ao
+# modelo). Os dados são estáticos; vazia, vale a data real.
+REFERENCE_DATE = _ler_data_referencia(os.getenv("REFERENCE_DATE"))
+
+
+def hoje() -> date:
+    return REFERENCE_DATE or date.today()

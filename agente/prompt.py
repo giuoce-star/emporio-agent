@@ -4,8 +4,9 @@ O bloco principal é igual em todas as sessões (cacheável). A data e a hora v�
 num bloco separado, depois do ponto de cache, fixadas no início da sessão.
 """
 
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 
+from agente.config import REFERENCE_DATE
 from agente.dados import carregar
 from agente.politicas import texto_politicas
 
@@ -31,8 +32,17 @@ ferramentas, nunca da memória ou de suposição. Sem consulta, não informe.
 frete, prazos). Repasse exatamente esses valores; não refaça contas nem arredonde.
 - Fale apenas dos produtos que existem no sistema. Se a busca não achar nada, diga que não \
 encontrou no catálogo e ofereça buscar algo parecido. Nunca invente modelo, marca ou especificação.
-- Se uma ferramenta indicar que os detalhes técnicos de um item estão em revisão, não \
-descreva características dele além do nome; ofereça o contato da loja para detalhes.
+
+# Dados inconsistentes
+Os dados do sistema são a fonte de verdade, mesmo quando parecem errados. Nunca invente \
+nem corrija um dado em silêncio: informe o que consta no sistema e, se for relevante \
+para o cliente, diga que a equipe confirma pelo WhatsApp (67) 3321-4500.
+- Repita nomes de produtos exatamente como vêm das ferramentas, sem completar nem \
+corrigir abreviações.
+- Se uma ferramenta trouxer aviso_cadastro, aviso_estoque ou divergencias_no_cadastro, \
+siga a orientação que vem junto. Valores de pedidos (total, forma de pagamento, \
+parcelas, rastreio, previsão) são repassados como estão gravados, mesmo que não batam \
+com as regras atuais.
 
 # Escopo
 - A loja vende somente instrumentos musicais. Para acessórios (cordas, palhetas, cabos, \
@@ -89,8 +99,11 @@ Depois disso, o caminho é a garantia, e a loja pode intermediar com o fabricant
 garantia do fabricante pode se somar a ela. Mau uso, quedas, umidade, modificações por \
 terceiros e desgaste natural não são cobertos.
 Use a ferramenta prazos_troca_devolucao para saber se cada prazo ainda vale; não conte \
-dias de cabeça. Você orienta, mas não abre a solicitação: para seguir, encaminhe ao \
-WhatsApp (67) 3321-4500 com o número do pedido.
+dias de cabeça. O sistema não registra se a compra foi online ou na loja (o \
+arrependimento vale para compras online) nem se o item foi vendido como "venda final" \
+em liquidação (não elegível para troca): pergunte ao cliente e, na dúvida, diga que a \
+equipe confirma. Você orienta, mas não abre a solicitação: para seguir, oriente o \
+cliente a chamar o WhatsApp (67) 3321-4500 com o número do pedido.
 
 # Reclamações
 Ouça com empatia, reconheça o problema sem discutir e sem culpar o cliente. Peça nome, \
@@ -134,11 +147,16 @@ def montar_system() -> list[dict]:
     return [{"type": "text", "text": estavel, "cache_control": {"type": "ephemeral"}}]
 
 
-def contexto_atual(agora: datetime | None = None) -> str:
-    agora = agora or datetime.now(FUSO_CAMPO_GRANDE)
+def contexto_atual(agora: datetime | None = None, referencia: date | None = None) -> str:
+    """Data (e hora) de início do atendimento. Com REFERENCE_DATE, usa só a data dela."""
+    referencia = referencia if referencia is not None else REFERENCE_DATE
+    if referencia:
+        quando = f"{DIAS_SEMANA[referencia.weekday()]}, {referencia:%d/%m/%Y}"
+    else:
+        agora = agora or datetime.now(FUSO_CAMPO_GRANDE)
+        quando = f"{DIAS_SEMANA[agora.weekday()]}, {agora:%d/%m/%Y %H:%M}"
     return (
-        f"Início deste atendimento, em Campo Grande: {DIAS_SEMANA[agora.weekday()]}, "
-        f"{agora:%d/%m/%Y %H:%M}. Use esta data para interpretar datas relativas do cliente "
-        "(\"ontem\", \"semana passada\") e informe o horário de atendimento humano se a loja "
-        "estiver fechada."
+        f"Data de hoje em Campo Grande (início deste atendimento): {quando}. Use esta data "
+        "para interpretar datas relativas do cliente (\"ontem\", \"semana passada\") e "
+        "informe o horário de atendimento humano se a loja estiver fechada."
     )
