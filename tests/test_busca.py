@@ -144,5 +144,18 @@ def test_prompt_manda_buscar_caracteristica_antes_de_negar():
     assert "busque pela característica sem marca nem modelo" in regras
 
 
+def test_prompt_so_opina_sobre_produto_com_base_nos_dados():
+    # Visto no exemplo 01: "o Ohana é uma boa opção se você quiser um som mais encorpado",
+    # sem nada disso na descrição ou nas specs devolvidas.
+    from agente.prompt import PERSONA_E_REGRAS
+
+    regras = " ".join(PERSONA_E_REGRAS.split())
+    assert "quando isso constar na descrição ou nas especificações devolvidas" in regras
+    assert "Sem base nos dados, não opine sobre o produto" in regras
+    # E as tools de fato devolvem essa base (descrição e specs) para os itens confiáveis.
+    detalhe = tools.consultar_preco(121)
+    assert detalhe["descricao"] and detalhe["especificacoes"]
+
+
 def test_produto_inexistente():
     assert "erro" in tools.consultar_preco(9999)
