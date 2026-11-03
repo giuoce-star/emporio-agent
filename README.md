@@ -257,10 +257,12 @@ decisões de arquitetura registradas antes em um `CLAUDE.md`:
    descrição contraditória, os totais que não batem e o e-mail duplicado. As três
    decisões sobre esses pontos foram aprovadas por mim antes de qualquer código.
 2. **Proposta de estrutura de pastas,** revisada e aprovada antes da implementação.
-3. **Consulta à documentação atual da API** (referência do SDK `anthropic`) antes de
-   escrever o código de tool use, para confirmar o formato das mensagens e os
-   detalhes do `claude-haiku-5-5` (thinking adaptativo ligado por padrão, effort
-   padrão `medium`, blocos da resposta devolvidos inteiros ao histórico).
+3. **Consulta à referência da API da Anthropic embutida no Claude Code** (skill
+   `claude-api`) antes de escrever o código de tool use, para confirmar o formato
+   das mensagens e os detalhes do `claude-haiku-5-5` (thinking adaptativo ligado
+   por padrão, effort padrão `medium`, blocos da resposta devolvidos inteiros ao
+   histórico). O site docs.claude.com não foi consultado diretamente; o último
+   ponto foi confirmado na prática por um erro 400 da API.
 4. **Implementação em etapas com commits pequenos,** testes sem API escritos junto
    com cada módulo.
 5. **Revisão manual das saídas:** conversei com o agente pela CLI e li as
