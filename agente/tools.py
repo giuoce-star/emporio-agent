@@ -98,16 +98,49 @@ def _resumo_produto(dados: Dados, p) -> dict:
     return item
 
 
+CORES = {"natural", "sunburst", "preto", "black", "red", "blue"}
+
+
+def _caracteristicas(nome: str, comuns: set[str]) -> set[str]:
+    """Palavras do nome que descrevem o produto ("7", "corda", "nylon", "dreadnought").
+
+    Ficam de fora a marca (primeira palavra), cores, palavras comuns na categoria e
+    pedaços de código de modelo ("ka", "gf", "3d", "srt"): só números puros ou
+    palavras com 4+ letras.
+    """
+    return {
+        t for t in _tokens(nome)[1:]
+        if (t.isdigit() or (t.isalpha() and len(t) >= 4)) and t not in CORES and t not in comuns
+    }
+
+
 def _alternativas(dados: Dados, p, limite: int = 3) -> list[dict]:
+    """Disponíveis da mesma categoria, mais parecidos primeiro e depois por preço.
+
+    Semelhança = palavras do nome em comum ("7 cordas", "nylon", "dreadnought"),
+    para um 7 cordas de nylon não receber como alternativa um 6 cordas de aço só
+    porque o preço é próximo.
+    """
     produtos = dados.produtos
-    candidatos = produtos[
-        (produtos["category_id"] == p["category_id"])
-        & (produtos["product_id"] != p["product_id"])
-        & (produtos["status"] == "active")
-        & (produtos["stock_quantity"] > 0)
+    da_categoria = produtos[produtos["category_id"] == p["category_id"]]
+    # Palavras presentes em metade ou mais da categoria (ex.: "natural") não distinguem.
+    frequencia: dict[str, int] = {}
+    for nome in da_categoria["name"]:
+        for token in set(_tokens(nome)):
+            frequencia[token] = frequencia.get(token, 0) + 1
+    comuns = {t for t, n in frequencia.items() if n >= len(da_categoria) / 2}
+
+    candidatos = da_categoria[
+        (da_categoria["product_id"] != p["product_id"])
+        & (da_categoria["status"] == "active")
+        & (da_categoria["stock_quantity"] > 0)
     ]
-    mais_proximos = (candidatos["price_brl"] - p["price_brl"]).abs().sort_values().index[:limite]
-    return [_resumo_produto(dados, candidatos.loc[i]) for i in mais_proximos]
+    alvo = _caracteristicas(p["name"], comuns)
+    ordem = candidatos.assign(
+        _semelhanca=candidatos["name"].map(lambda n: len(alvo & _caracteristicas(n, comuns))),
+        _distancia=(candidatos["price_brl"] - p["price_brl"]).abs(),
+    ).sort_values(["_semelhanca", "_distancia"], ascending=[False, True], kind="stable")
+    return [_resumo_produto(dados, ordem.loc[i]) for i in ordem.index[:limite]]
 
 
 def buscar_produtos(

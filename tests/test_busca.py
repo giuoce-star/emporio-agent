@@ -125,5 +125,24 @@ def test_indisponiveis_sem_preco_e_com_alternativas():
     assert all(a["disponibilidade"] == "disponível" for a in esgotado["alternativas"])
 
 
+def test_alternativas_priorizam_caracteristicas_do_nome():
+    # Bug visto no exemplo 03: para o Shelby SN-7C (7 cordas, nylon, descontinuado)
+    # as alternativas eram violões de 6 cordas de aço, só pelo preço próximo.
+    sete_cordas = [a["nome"] for a in tools.consultar_preco(113)["alternativas"]]
+    assert all("7 Cordas" in n for n in sete_cordas)
+    assert "Nylon" in sete_cordas[0]  # mais parecido (7 cordas + nylon) primeiro
+    # Cor ("Sunburst") não conta como semelhança; formato ("Dreadnought") conta.
+    dreadnought = [a["nome"] for a in tools.consultar_preco(96)["alternativas"]]
+    assert all("Dreadnought" in n for n in dreadnought)
+    assert all(a["disponibilidade"] == "disponível" for a in tools.consultar_preco(96)["alternativas"])
+
+
+def test_prompt_manda_buscar_caracteristica_antes_de_negar():
+    from agente.prompt import PERSONA_E_REGRAS
+
+    regras = " ".join(PERSONA_E_REGRAS.split())
+    assert "busque pela característica sem marca nem modelo" in regras
+
+
 def test_produto_inexistente():
     assert "erro" in tools.consultar_preco(9999)
