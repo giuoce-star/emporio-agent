@@ -320,13 +320,15 @@ def status_pedido(
     if em_aberto and previsao is not None and previsao < hoje:
         resultado["alerta"] = (
             f"A previsão de entrega ({previsao:%d/%m/%Y}) já passou e o pedido não consta como "
-            "entregue. Seja transparente e ofereça encaminhar para a equipe verificar."
+            "entregue. Seja transparente e oriente o cliente a falar com a equipe pelo "
+            "WhatsApp (67) 3321-4500 para verificar."
         )
     elif pedido["status"] in ("pending", "confirmed") and (hoje - pedido["order_date"]).days > 15:
         dias = (hoje - pedido["order_date"]).days
         resultado["alerta"] = (
             f"O pedido está com esse status há {dias} dias, acima do esperado. Seja "
-            "transparente e ofereça encaminhar para a equipe verificar."
+            "transparente e oriente o cliente a falar com a equipe pelo WhatsApp "
+            "(67) 3321-4500 para verificar."
         )
     return resultado
 

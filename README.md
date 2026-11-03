@@ -132,6 +132,16 @@ acessórios, itens inconsistentes), pedidos (verificação, atraso, cancelamento
 prazos de troca e o loop do agente com um LLM falso (histórico, desfazer o turno
 em erro da API, limite de rodadas).
 
+### Teste de fumaça com o modelo
+
+Uma conversa de 5 mensagens com `claude-haiku-5-5` (promoção + PIX, acessório,
+pedido com verificação e atraso, pergunta fora de escopo) se comportou como
+esperado: o PIX não foi somado à promoção, o pedido só foi consultado depois do
+e-mail e o cache do prompt foi reaproveitado entre as chamadas. Um defeito
+apareceu e foi corrigido: no pedido atrasado, o agente dizia "posso encaminhar
+para a equipe", algo que ele não faz. O prompt e o alerta da tool passaram a
+orientar o cliente a falar pelo WhatsApp.
+
 ## Conversas de exemplo
 
 Em `examples/` (a gerar).
