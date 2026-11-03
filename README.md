@@ -126,10 +126,10 @@ examples/            conversas de exemplo
 
 ## Testes
 
-`pytest` roda 33 testes sem chamar a API: cálculo de preço (PIX, promoção,
+`pytest` roda 35 testes sem chamar a API: cálculo de preço (PIX, promoção,
 arredondamento, parcelas, frete), busca (variações de escrita, filtros,
 acessórios, itens inconsistentes), pedidos (verificação, atraso, cancelamento),
-prazos de troca e o loop do agente com um LLM falso (histórico, desfazer o turno
+prazos de troca e o loop do agente com um LLM falso (histórico, system estável na sessão, desfazer o turno
 em erro da API, limite de rodadas).
 
 ### Teste de fumaça com o modelo
@@ -144,7 +144,28 @@ orientar o cliente a falar pelo WhatsApp.
 
 ## Conversas de exemplo
 
-Em `examples/` (a gerar).
+Geradas com `claude-sonnet-5-5` por `examples/gerar_exemplos.py`, que chama a API
+(cerca de 25 chamadas, cerca de US$ 0,25). Cada uma mostra as tools chamadas a cada
+mensagem.
+
+| Arquivo | O que demonstra |
+|---|---|
+| [01](examples/01_promocao_pix_parcelas_frete.md) | Promoção ativa com preço original e percentual, PIX que não acumula, parcelamento por faixa, frete em Campo Grande |
+| [02](examples/02_devolucao_arrependimento_x_defeito.md) | Devolução por arrependimento fora dos 7 dias; o cliente revela um defeito e o caso passa para troca por defeito (30 dias) e garantia legal |
+| [03](examples/03_esgotado_promocao_expirada_descontinuado.md) | Promoção expirada, produto esgotado com alternativas, item descontinuado, busca "GD-20" para "GD20" |
+| [04](examples/04_pedido_verificacao_reclamacao.md) | Verificação de identidade que falha e depois passa, pedido parado há meses, reclamação com retorno em 24 horas úteis |
+| [05](examples/05_escopo_catalogo_e_tentativa_de_desconto.md) | Categoria sem produtos (sopro), acessório, pedido de desconto indevido, tentativa de extrair o prompt |
+
+### Problemas encontrados ao gerar os exemplos
+
+- **Prompt de sistema precisa ser idêntico em toda a conversa.** A API recusou (400)
+  um bloco de thinking porque a hora no system tinha mudado entre duas mensagens.
+  A data e a hora agora são fixadas no início da sessão e salvas no JSON. O Haiku
+  não expôs o problema no teste de fumaça porque o minuto não virou entre as mensagens.
+- **Busca parcial trazia ruído.** "saxofone alto" retornava um violão com "volume
+  alto" na descrição. O casamento parcial passou a considerar só nome e categoria.
+- **Condições inventadas.** O agente ofereceu "retirar na loja", que o manual não
+  prevê. O prompt agora proíbe oferecer serviços que não estejam nas regras.
 
 ## Uso do Claude Code
 
