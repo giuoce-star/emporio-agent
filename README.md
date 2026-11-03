@@ -263,3 +263,8 @@ decisões de arquitetura registradas antes em um `CLAUDE.md`:
    padrão `medium`, blocos da resposta devolvidos inteiros ao histórico).
 4. **Implementação em etapas com commits pequenos,** testes sem API escritos junto
    com cada módulo.
+5. **Revisão manual das saídas:** conversei com o agente pela CLI e li as
+   conversas de exemplo antes de aceitá-las. Isso levou a correções no código e
+   no prompt: ordenação dos resultados por preço, opinião sobre produto só com
+   base na descrição e nas specs, não sugerir exceção de prazo e não prometer
+   canal de retorno.
