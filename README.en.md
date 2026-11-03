@@ -266,8 +266,8 @@ architecture decisions recorded beforehand in a `CLAUDE.md`:
    skill) before writing the tool use code, to confirm the message format and the
    details of `claude-haiku-5-5` (adaptive thinking on by default, default effort
    `medium`, response blocks returned whole to the history). The docs.claude.com site
-   was not consulted directly; the last point was confirmed in practice by a 400 error
-   from the API.
+   was not consulted directly. Later, a 400 error from the API showed that it validates
+   thinking blocks against the system prompt.
 4. **Implementation in stages with small commits,** with tests that do not use the API
    written alongside each module.
 5. **Manual review of the outputs:** I talked to the agent through the CLI and read the

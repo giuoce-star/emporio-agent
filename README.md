@@ -261,8 +261,9 @@ decisões de arquitetura registradas antes em um `CLAUDE.md`:
    `claude-api`) antes de escrever o código de tool use, para confirmar o formato
    das mensagens e os detalhes do `claude-haiku-5-5` (thinking adaptativo ligado
    por padrão, effort padrão `medium`, blocos da resposta devolvidos inteiros ao
-   histórico). O site docs.claude.com não foi consultado diretamente; o último
-   ponto foi confirmado na prática por um erro 400 da API.
+   histórico). O site docs.claude.com não foi consultado diretamente.
+   Depois, um erro 400 da API mostrou que ela valida os blocos de thinking contra o
+   prompt de sistema.
 4. **Implementação em etapas com commits pequenos,** testes sem API escritos junto
    com cada módulo.
 5. **Revisão manual das saídas:** conversei com o agente pela CLI e li as
