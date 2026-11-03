@@ -81,6 +81,21 @@ examples/            example conversations
 - **Complaints without a tool.** The reply is standardized by the prompt (empathy,
   asking for the details, follow-up within 24 business hours). The conversation is
   saved in the session JSON.
+- **Provider: Anthropic.** Native tool use in the API and an official Python SDK
+  (`anthropic`). Since the model call is isolated in `llm.py`, the choice is
+  reversible: switching providers means rewriting that file.
+- **Interface: CLI.** The brief says the focus is the agent, so the interface was kept
+  minimal. The CLI shows the tools called with `--debug` and resumes a conversation
+  with `--sessao`.
+- **Persistence: JSON per session.** It allows resuming the conversation, requires no
+  database for a prototype, and the saved conversation serves as the record of the
+  complaint. The trade-off is having no search and no concurrency.
+- **Persona and tone.** The prompt turns the manual's tone into a virtual assistant
+  that is "informal but professional: a friend who knows about music": welcoming,
+  direct, neither robotic nor too formal, with short messages, like in a chat. The
+  agent applies the rules as "nossa política" (our policy), without citing the manual,
+  does not offer services or conditions outside the rules, and does not give opinions
+  about a product without a basis in the description or specs.
 
 ## Assumptions and data inconsistencies
 

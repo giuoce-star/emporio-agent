@@ -77,6 +77,21 @@ examples/            conversas de exemplo
   conversas de exemplo. É configurável por `MODEL`.
 - **Reclamação sem tool.** A resposta é padronizada pelo prompt (empatia, pedido
   dos dados, retorno em 24 horas úteis). A conversa fica salva no JSON da sessão.
+- **Provedor: Anthropic.** Tool use nativo na API e SDK Python oficial (`anthropic`).
+  Como a chamada ao modelo fica isolada em `llm.py`, a escolha é reversível: trocar
+  de provedor significa reescrever esse arquivo.
+- **Interface: CLI.** O enunciado diz que o foco é o agente, então a interface ficou
+  no mínimo. A CLI mostra as tools chamadas com `--debug` e retoma uma conversa com
+  `--sessao`.
+- **Persistência: JSON por sessão.** Permite retomar a conversa, não exige banco em
+  um protótipo, e a conversa salva serve de registro da reclamação. O trade-off é
+  não ter busca nem concorrência.
+- **Persona e tom.** O prompt traduz o tom do manual em um assistente virtual
+  "informal, mas profissional: um amigo que entende de música": acolhedor, direto,
+  sem linguagem robótica nem formal demais, com mensagens curtas, como num chat. O
+  agente aplica as regras como "nossa política", sem citar o manual, não oferece
+  serviços ou condições fora das regras e não opina sobre produto sem base na
+  descrição ou nas specs.
 
 ## Suposições e inconsistências dos dados
 
