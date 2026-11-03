@@ -22,11 +22,13 @@ PASTA = Path(__file__).resolve().parent
 ROTEIROS = [
     (
         "01_promocao_pix_parcelas_frete",
-        "Promoção, PIX, parcelamento e frete",
-        "Compra com promoção ativa: preço original + desconto, PIX que não acumula, "
-        "parcelamento e frete na região metropolitana.",
+        "Informações da loja, promoção, PIX, parcelamento e frete",
+        "Informações gerais da loja (endereço e horário de sábado), compra com promoção "
+        "ativa: preço original + desconto, PIX que não acumula, parcelamento e frete na "
+        "região metropolitana.",
         [
-            "Oi! Tô procurando um ukulele concert pra minha filha, até uns 500 reais. O que vocês têm?",
+            "Oi! Onde fica a loja de vocês? E sábado abre até que horas?",
+            "Legal! Tô procurando um ukulele concert pra minha filha, até uns 500 reais. O que vocês têm?",
             "Gostei do Ohana CK-20. Se eu pagar no PIX fica mais barato? E dá pra parcelar?",
             "Moro aqui em Campo Grande mesmo. Quanto fica o frete?",
         ],

@@ -203,7 +203,7 @@ só uma). Cada uma mostra as tools chamadas a cada mensagem e a data usada como 
 
 | Arquivo | O que demonstra |
 |---|---|
-| [01](examples/01_promocao_pix_parcelas_frete.md) | Promoção ativa com preço original e percentual, PIX que não acumula, parcelamento por faixa, frete em Campo Grande |
+| [01](examples/01_promocao_pix_parcelas_frete.md) | Informações gerais da loja, promoção ativa, PIX, parcelamento e frete |
 | [02](examples/02_devolucao_arrependimento_x_defeito.md) | Devolução por arrependimento fora dos 7 dias; o cliente revela um defeito e o caso passa para troca por defeito (30 dias) e garantia legal |
 | [03](examples/03_esgotado_promocao_expirada_descontinuado.md) | Promoção expirada, produto esgotado com alternativas, item descontinuado, busca "GD-20" para "GD20" |
 | [04](examples/04_pedido_verificacao_reclamacao.md) | Verificação de identidade que falha e depois passa, pedido parado há meses, reclamação com retorno em 24 horas úteis |
