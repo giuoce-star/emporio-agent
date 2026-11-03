@@ -83,7 +83,7 @@ examples/            example conversations
   saved in the session JSON.
 - **Provider: Anthropic.** Native tool use in the API and an official Python SDK
   (`anthropic`). Since the model call is isolated in `llm.py`, the choice is
-  reversible: switching providers means rewriting that file.
+  reversible.
 - **Interface: CLI.** The brief says the focus is the agent, so the interface was kept
   minimal. The CLI shows which tools were called with `--debug` and resumes a conversation
   with `--sessao`.

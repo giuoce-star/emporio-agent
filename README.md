@@ -78,8 +78,7 @@ examples/            conversas de exemplo
 - **Reclamação sem tool.** A resposta é padronizada pelo prompt (empatia, pedido
   dos dados, retorno em 24 horas úteis). A conversa fica salva no JSON da sessão.
 - **Provedor: Anthropic.** Tool use nativo na API e SDK Python oficial (`anthropic`).
-  Como a chamada ao modelo fica isolada em `llm.py`, a escolha é reversível: trocar
-  de provedor significa reescrever esse arquivo.
+  Como a chamada ao modelo fica isolada em `llm.py`, a escolha é reversível.
 - **Interface: CLI.** O enunciado diz que o foco é o agente, então a interface ficou
   no mínimo. A CLI mostra as tools chamadas com `--debug` e retoma uma conversa com
   `--sessao`.
