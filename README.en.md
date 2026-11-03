@@ -70,7 +70,7 @@ examples/            example conversations
   manual's inconsistencies explicitly.
 - **Five small tools, each with one responsibility:** `buscar_produtos`,
   `consultar_preco`, `calcular_frete`, `prazos_troca_devolucao`, `status_pedido`.
-  CLAUDE.md planned for three. `calcular_frete` and `prazos_troca_devolucao` were
+  CLAUDE.md had planned three. `calcular_frete` and `prazos_troca_devolucao` were
   added for the same reason as the calculations: shipping and day counting are
   deterministic rules that the model would get wrong.
 - **Provider isolated in `llm.py`.** The loop only knows `LLM.responder` and the
@@ -78,14 +78,14 @@ examples/            example conversations
 - **Model:** `claude-haiku-5-5` during development, for cost reasons (US$ 5 budget).
   `claude-sonnet-5-5` is reserved for the final validation of the hard scenarios and
   for the example conversations. It is configurable through `MODEL`.
-- **Complaints without a tool.** The reply is standardized by the prompt (empathy,
+- **Complaints handled without a tool.** The reply is standardized by the prompt (empathy,
   asking for the details, follow-up within 24 business hours). The conversation is
   saved in the session JSON.
 - **Provider: Anthropic.** Native tool use in the API and an official Python SDK
   (`anthropic`). Since the model call is isolated in `llm.py`, the choice is
   reversible: switching providers means rewriting that file.
 - **Interface: CLI.** The brief says the focus is the agent, so the interface was kept
-  minimal. The CLI shows the tools called with `--debug` and resumes a conversation
+  minimal. The CLI shows which tools were called with `--debug` and resumes a conversation
   with `--sessao`.
 - **Persistence: JSON per session.** It allows resuming the conversation, requires no
   database for a prototype, and the saved conversation serves as the record of the
@@ -146,17 +146,17 @@ Line numbers count the CSV header as line 1.
 
 | Line | What looks wrong | Handling |
 |---|---|---|
-| orders 4 and 21 (orders 3 and 20) | The recorded total does not match the sum of the items at current prices (3450 versus 3498; 1400 versus 1488). `order_items` does not store a unit price | Passes along the recorded total and records the discrepancy. The agent only mentions it if the customer questions the amount |
-| orders 2, 6, 11, 14, 18 (orders 1, 5, 10, 13, 17) | PIX orders at list price, without the 5% | Same handling |
-| orders 10, 17, 19 (orders 9, 16, 18) | Installment below the current minimum: 6x of R$ 58,32, 6x of R$ 71,65 and 12x of R$ 38,33 | Reports the recorded payment method; records the discrepancy |
-| orders 2–6 and 8–9 (orders 1–5, 7 and 8) | Campo Grande orders with Correios tracking and an estimate of 10 to 15 days, when the manual says motorcycle courier in 1 to 3 business days | Reports the recorded tracking and estimate, without stating which delivery method was used |
-| orders 9–17 | Feb/Mar 2026 dates with open status; against the real date, everything is very late | `REFERENCE_DATE` allows evaluating against another date. The tool flags the delay and the agent points to WhatsApp |
+| orders.csv lines 4 and 21 (order IDs 3 and 20) | The recorded total does not match the sum of the items at current prices (3450 versus 3498; 1400 versus 1488). `order_items` does not store a unit price | Passes along the recorded total and records the discrepancy. The agent only mentions it if the customer questions the amount |
+| orders.csv lines 2, 6, 11, 14 and 18 (order IDs 1, 5, 10, 13 and 17) | PIX orders at list price, without the 5% | Same handling |
+| orders.csv lines 10, 17 and 19 (order IDs 9, 16 and 18) | Installment below the current minimum: 6x of R$ 58,32, 6x of R$ 71,65 and 12x of R$ 38,33 | Reports the recorded payment method; records the discrepancy |
+| orders.csv lines 2–6 and 8–9 (order IDs 1–5, 7 and 8) | Campo Grande orders with Correios tracking and an estimate of 10 to 15 days, when the manual says motorcycle courier in 1 to 3 business days | Reports the recorded tracking and estimate, without stating which delivery method was used |
+| orders.csv lines 9–17 (order IDs 8–16) | Feb/Mar 2026 dates with open status; against the real date, everything is very late | `REFERENCE_DATE` allows evaluating against another date. The tool flags the delay and the agent points to WhatsApp |
 
 ### customers.csv
 
 | Line | What looks wrong | Handling |
 |---|---|---|
-| 12 and 44 | Customers 11 and 43 with the same e-mail | Verification checks the contact against the customer of **that order**, so nobody sees another person's order |
+| 12 and 44 | Customers 11 and 43 share the same e-mail | Verification checks the contact against the customer of **that order**, so nobody sees another person's order |
 | 32–51 | Names without accents ("Joao", "Leticia") | No impact: verification uses e-mail or phone |
 
 ### Policy manual (PDF)
@@ -165,16 +165,16 @@ Line numbers count the CSV header as line 1.
 |---|---|
 | (67) 3341-4444 appears as "Telefone / WhatsApp" and (67) 3321-4500 as the WhatsApp number | 3321-4500 for WhatsApp, 3341-4444 as the landline |
 | E-mail with and without an accent | `contato@emporiodamusica.com.br` |
-| The table says a minimum installment of R$ 100 for up to 12x; section 3.1 details tiers | Section 3.1 applies: up to 3x with a R$ 50 minimum (reading of "no minimum, except below R$ 50"), 4x to 6x with R$ 80, 7x to 12x with R$ 100 |
+| The table says a minimum installment of R$ 100 for up to 12x; section 3.1 details tiers | Section 3.1 applies: up to 3x with a R$ 50 minimum (interpreting "no minimum, except below R$ 50"), 4x to 6x with R$ 80, 7x to 12x with R$ 100 |
 | "Free shipping above R$ 500"; municipalities of the metropolitan region not listed | Exactly R$ 500,00 pays R$ 35. Only Campo Grande counts as metropolitan; other cities are told to get a quote by postal code (CEP) |
 | Change-of-mind return applies only to "online purchases", but orders do not state the channel | The agent asks the customer; when in doubt, the team confirms |
 | "Final sale" in clearance is not eligible for exchange, but no data marks this | The agent says the team will confirm eligibility |
-| The preference exchange deadline ("up to 7 days") does not say from when | It counts from receipt, like the change-of-mind return |
+| For an exchange for preference, the deadline ("up to 7 days") does not say when it starts | It counts from receipt, like the change-of-mind return |
 | Catalog of "300+" instruments, including wind instruments and orchestral strings | The system has 65 items; the agent only talks about what is in it |
 
 ### Other assumptions
 
-- **Deadlines:** change-of-mind return and preference exchange count 7 calendar days
+- **Deadlines:** change-of-mind return and exchange for preference count 7 calendar days
   from receipt. Defect exchange counts 30 days from purchase (or from receipt, if the
   purchase date is not provided, which is more favorable to the customer). Statutory
   warranty counts 90 days from receipt.
@@ -237,16 +237,16 @@ reach out via WhatsApp.
 ## Example conversations
 
 Generated with `claude-sonnet-5-5` by `examples/gerar_exemplos.py`, which calls the API
-(about 25 calls, about US$ 0,25; `python examples/gerar_exemplos.py 01` generates just
+(about 25 calls, about US$0.25; `python examples/gerar_exemplos.py 01` generates just
 one). Each one shows the tools called at each message and the date used as "today".
 
 | File | What it demonstrates |
 |---|---|
-| [01](examples/01_promocao_pix_parcelas_frete.md) | General store information, active promotion, PIX, installments and shipping |
-| [02](examples/02_devolucao_arrependimento_x_defeito.md) | Change-of-mind return outside the 7 days; the customer reveals a defect and the case moves to defect exchange (30 days) and statutory warranty |
-| [03](examples/03_esgotado_promocao_expirada_descontinuado.md) | Expired promotion, out-of-stock product with alternatives, discontinued item with other 7-string acoustic guitars, price of a product with no active promotion |
-| [04](examples/04_pedido_verificacao_reclamacao.md) | Identity verification that fails and then passes, order stuck for months, complaint with follow-up within 24 business hours |
-| [05](examples/05_escopo_catalogo_e_tentativa_de_desconto.md) | Category with no products (wind), accessory, improper discount request, attempt to extract the prompt |
+| [01_promocao_pix_parcelas_frete.md](examples/01_promocao_pix_parcelas_frete.md) | General store information, active promotion, PIX, installments and shipping |
+| [02_devolucao_arrependimento_x_defeito.md](examples/02_devolucao_arrependimento_x_defeito.md) | Change-of-mind return outside the 7 days; the customer reveals a defect and the case moves to defect exchange (30 days) and statutory warranty |
+| [03_esgotado_promocao_expirada_descontinuado.md](examples/03_esgotado_promocao_expirada_descontinuado.md) | Expired promotion, out-of-stock product with alternatives, discontinued item with other 7-string acoustic guitars, price of a product with no active promotion |
+| [04_pedido_verificacao_reclamacao.md](examples/04_pedido_verificacao_reclamacao.md) | Identity verification that fails and then passes, order stuck for months, complaint with follow-up within 24 business hours |
+| [05_escopo_catalogo_e_tentativa_de_desconto.md](examples/05_escopo_catalogo_e_tentativa_de_desconto.md) | Category with no products (wind), accessory, improper discount request, attempt to extract the prompt |
 
 ### Problems found while generating the examples
 
@@ -264,8 +264,8 @@ one). Each one shows the tools called at each message and the date used as "toda
 ## Use of coding assistants
 
 I used Claude in two places. In the chat (claude.ai), for planning: I discussed the
-architecture, the scope for the one-day deadline, the provider and the cost, put
-together CLAUDE.md with the decisions, drafted with Claude in the chat, and reviewed the
+architecture, the scope for the one-day deadline, the provider and the cost, drafted
+CLAUDE.md with the decisions together with Claude, and reviewed the
 deliverables. In Claude Code, for implementation: it inspected the data, proposed the
 structure, wrote the code and the tests and made the commits.
 
