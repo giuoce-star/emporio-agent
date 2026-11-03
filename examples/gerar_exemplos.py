@@ -57,8 +57,8 @@ ROTEIROS = [
     (
         "03_esgotado_promocao_expirada_descontinuado",
         "Esgotado, promoção expirada e descontinuado",
-        "Produto esgotado, promoção que já acabou, item descontinuado e busca com "
-        "grafia diferente do cadastro.",
+        "Promoção expirada, produto esgotado com alternativas, item descontinuado com "
+        "outros violões de 7 cordas, preço de produto sem promoção ativa.",
         [
             "Vi que o Giannini GF-3D tava com 40% off na Semana do Músico. Ainda tá valendo?",
             "Poxa. E o Shelby 7 cordas SN-7C, tem?",

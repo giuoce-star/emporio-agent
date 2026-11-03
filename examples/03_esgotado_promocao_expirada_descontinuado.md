@@ -1,6 +1,6 @@
 # Esgotado, promoção expirada e descontinuado
 
-_Produto esgotado, promoção que já acabou, item descontinuado e busca com grafia diferente do cadastro._
+_Promoção expirada, produto esgotado com alternativas, item descontinuado com outros violões de 7 cordas, preço de produto sem promoção ativa._
 
 Modelo: `claude-sonnet-5-5` · gerado em 03/11/2026 16:17 · data de referência ("hoje"): 03/11/2026 (data real)
 
