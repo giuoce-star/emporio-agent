@@ -64,6 +64,10 @@ def carregar_de(pasta: Path) -> Dados:
     produtos["busca"] = produtos.apply(texto_busca, axis=1)
     # Versão sem espaços, para "gn15" casar com "GN-15" e "gd 20" com "GD20".
     produtos["busca_compacta"] = produtos["busca"].str.replace(" ", "", regex=False)
+    # Só nome + categoria: base do casamento parcial, para uma palavra solta da
+    # descrição ("volume alto") não trazer um violão na busca por "saxofone alto".
+    produtos["busca_nome"] = (produtos["name"] + " " + produtos["categoria"]).map(normalizar)
+    produtos["busca_nome_compacta"] = produtos["busca_nome"].str.replace(" ", "", regex=False)
 
     promocoes = _ler(pasta, "promotions.csv")
     promocoes["is_active"] = promocoes["is_active"].astype(bool)

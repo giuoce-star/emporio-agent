@@ -38,6 +38,13 @@ def test_acessorio_nao_existe_no_catalogo():
     assert "observacao" in resultado
 
 
+def test_casamento_parcial_ignora_descricao():
+    # "alto" aparece em "volume alto" na descrição de um violão: não deve vir.
+    assert tools.buscar_produtos("saxofone alto")["total_encontrado"] == 0
+    parcial = tools.buscar_produtos("yamaha saxofone")
+    assert parcial["total_encontrado"] > 0 and "em parte" in parcial["observacao"]
+
+
 def test_vendaveis_aparecem_primeiro():
     resultado = tools.buscar_produtos("7 cordas", limite=15)
     disponibilidades = [p["disponibilidade"] for p in resultado["produtos"]]

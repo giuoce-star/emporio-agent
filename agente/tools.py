@@ -120,18 +120,21 @@ def buscar_produtos(
         produtos = produtos[produtos["categoria"].map(lambda c: alvo in normalizar(c))]
 
     tokens = _tokens(termo)
-    if tokens:
-        def pontos(p) -> int:
-            return sum(t in p["busca"] or t in p["busca_compacta"] for t in tokens)
+    parcial = False
+    if tokens and len(produtos):
+        def pontos(p, coluna: str) -> int:
+            return sum(t in p[coluna] or t in p[coluna + "_compacta"] for t in tokens)
 
-        placar = produtos.apply(pontos, axis=1) if len(produtos) else produtos["product_id"]
-        # Primeiro exige todos os termos; se nada casar, aceita casamento parcial.
+        placar = produtos.apply(pontos, axis=1, coluna="busca")
+        # Primeiro exige todos os termos (em nome, categoria ou descrição). Se nada
+        # casar, aceita casamento parcial, mas só em nome e categoria.
         if (placar == len(tokens)).any():
             produtos = produtos[placar == len(tokens)]
         else:
-            produtos = produtos[placar > 0]
-            placar = placar[placar > 0]
-            produtos = produtos.loc[placar.sort_values(ascending=False).index]
+            parcial = True
+            placar = produtos.apply(pontos, axis=1, coluna="busca_nome")
+            placar = placar[placar > 0].sort_values(ascending=False, kind="stable")
+            produtos = produtos.loc[placar.index]
 
     if preco_min is not None or preco_max is not None:
         finais = produtos.apply(lambda p: _preco_final(dados, p), axis=1)
@@ -155,6 +158,11 @@ def buscar_produtos(
         resultado["observacao"] = (
             "Nenhum produto encontrado no sistema com esses critérios. "
             "Não ofereça itens que não estejam no sistema."
+        )
+    elif parcial:
+        resultado["observacao"] = (
+            "Nenhum produto tem todos os termos da busca; estes casam só em parte. "
+            "Confira se atendem ao pedido antes de oferecer."
         )
     return resultado
 
