@@ -1,0 +1,20 @@
+# Segredos
+.env
+
+# Ambiente virtual
+.venv/
+venv/
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Sessões de conversa geradas em execução
+sessions/
+
+# Editores / SO
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
