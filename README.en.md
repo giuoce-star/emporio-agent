@@ -134,7 +134,7 @@ Line numbers count the CSV header as line 1.
 | orders 4 and 21 (orders 3 and 20) | The recorded total does not match the sum of the items at current prices (3450 versus 3498; 1400 versus 1488). `order_items` does not store a unit price | Passes along the recorded total and records the discrepancy. The agent only mentions it if the customer questions the amount |
 | orders 2, 6, 11, 14, 18 (orders 1, 5, 10, 13, 17) | PIX orders at list price, without the 5% | Same handling |
 | orders 10, 17, 19 (orders 9, 16, 18) | Installment below the current minimum: 6x of R$ 58,32, 6x of R$ 71,65 and 12x of R$ 38,33 | Reports the recorded payment method; records the discrepancy |
-| orders 2–9 | Campo Grande orders with Correios tracking and an estimate of 10 to 15 days, when the manual says motorcycle courier in 1 to 3 business days | Reports the recorded tracking and estimate, without stating which delivery method was used |
+| orders 2–6 and 8–9 (orders 1–5, 7 and 8) | Campo Grande orders with Correios tracking and an estimate of 10 to 15 days, when the manual says motorcycle courier in 1 to 3 business days | Reports the recorded tracking and estimate, without stating which delivery method was used |
 | orders 9–17 | Feb/Mar 2026 dates with open status; against the real date, everything is very late | `REFERENCE_DATE` allows evaluating against another date. The tool flags the delay and the agent points to WhatsApp |
 
 ### customers.csv

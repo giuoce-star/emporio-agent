@@ -129,7 +129,7 @@ Linhas contam o cabeçalho do CSV como linha 1.
 | orders 4 e 21 (pedidos 3 e 20) | O total gravado não bate com a soma dos itens pelos preços atuais (3450 contra 3498; 1400 contra 1488). `order_items` não guarda preço unitário | Repassa o total gravado e registra a divergência. O agente só a menciona se o cliente questionar o valor |
 | orders 2, 6, 11, 14, 18 (pedidos 1, 5, 10, 13, 17) | Pedidos no PIX pelo preço de tabela, sem os 5% | Mesmo tratamento |
 | orders 10, 17, 19 (pedidos 9, 16, 18) | Parcela abaixo do mínimo atual: 6x de R$ 58,32, 6x de R$ 71,65 e 12x de R$ 38,33 | Informa a forma de pagamento gravada; registra a divergência |
-| orders 2–9 | Pedidos de Campo Grande com rastreio dos Correios e previsão de 10 a 15 dias, quando o manual diz motoboy em 1 a 3 dias úteis | Informa o rastreio e a previsão gravados, sem afirmar qual modalidade foi usada |
+| orders 2–6 e 8–9 (pedidos 1–5, 7 e 8) | Pedidos de Campo Grande com rastreio dos Correios e previsão de 10 a 15 dias, quando o manual diz motoboy em 1 a 3 dias úteis | Informa o rastreio e a previsão gravados, sem afirmar qual modalidade foi usada |
 | orders 9–17 | Datas de fev/mar 2026 com status em aberto; contra a data real, tudo está muito atrasado | `REFERENCE_DATE` permite avaliar contra outra data. A tool sinaliza atraso e o agente orienta o WhatsApp |
 
 ### customers.csv
