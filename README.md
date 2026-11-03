@@ -71,7 +71,7 @@ examples/            conversas de exemplo
 - **Provedor isolado em `llm.py`.** O loop só conhece `LLM.responder` e os
   construtores de mensagem. Trocar de provedor significa reescrever esse arquivo.
 - **Modelo:** `claude-haiku-5-5` no desenvolvimento, por custo (orçamento de US$ 5).
-  `claude-sonnet-5-5` foi usado na validação final dos cenários difíceis e nas
+  `claude-sonnet-5-5` fica para a validação final dos cenários difíceis e para as
   conversas de exemplo. É configurável por `MODEL`.
 - **Reclamação sem tool.** A resposta é padronizada pelo prompt (empatia, pedido
   dos dados, retorno em 24 horas úteis). A conversa fica salva no JSON da sessão.
