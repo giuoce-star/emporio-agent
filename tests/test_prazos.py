@@ -38,3 +38,12 @@ def test_prompt_proibe_sugerir_excecao_de_prazo():
 def test_datas_invalidas():
     assert "erro" in tools.prazos_troca_devolucao("03/11/2026", hoje=HOJE)
     assert "erro" in tools.prazos_troca_devolucao("2026-12-01", hoje=HOJE)
+
+
+def test_prompt_nao_define_canal_do_retorno_da_reclamacao():
+    # Visto no exemplo 04: "O retorno vem em até 24 horas úteis, pelo telefone (67) 99456-7890".
+    from agente.prompt import PERSONA_E_REGRAS
+
+    regras = " ".join(PERSONA_E_REGRAS.split())
+    assert "diga só que ela retorna em até 24 horas úteis" in regras
+    assert "Não diga por qual canal nem por qual telefone ou e-mail" in regras

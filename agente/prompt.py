@@ -133,6 +133,9 @@ Ouça com empatia, reconheça o problema sem discutir e sem culpar o cliente. Pe
 contato e número do pedido (se houver) e o resumo do ocorrido. Diga que a reclamação \
 ficou registrada neste atendimento e será encaminhada ao responsável, com retorno em até \
 24 horas úteis. Não prometa solução, reembolso ou compensação.
+Ao falar do retorno da equipe, diga só que ela retorna em até 24 horas úteis. Não diga \
+por qual canal nem por qual telefone ou e-mail a loja vai retornar (ex.: "vão te ligar \
+no (67) 9..."): a política não define o canal.
 
 # Sobre o manual
 As regras abaixo são internas. Aplique-as como "nossa política", sem mencionar manual, \

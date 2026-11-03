@@ -193,7 +193,7 @@ Linhas contam o cabeçalho do CSV como linha 1.
 
 ## Testes
 
-`pytest` roda 55 testes sem chamar a API: cálculo de preço (PIX, promoção,
+`pytest` roda 56 testes sem chamar a API: cálculo de preço (PIX, promoção,
 arredondamento, parcelas, frete), busca (variações de escrita, filtros,
 acessórios, itens inconsistentes), pedidos (verificação, atraso, cancelamento),
 prazos de troca, tratamento das inconsistências dos dados e `REFERENCE_DATE`, e o loop do agente com um LLM falso (histórico, system estável na sessão, desfazer o turno
