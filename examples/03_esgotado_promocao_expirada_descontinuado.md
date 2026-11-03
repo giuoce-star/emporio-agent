@@ -2,21 +2,21 @@
 
 _Produto esgotado, promoção que já acabou, item descontinuado e busca com grafia diferente do cadastro._
 
-Modelo: `claude-sonnet-5-5` · gerado em 03/11/2026 13:35
+Modelo: `claude-sonnet-5-5` · gerado em 03/11/2026 14:18 · data de referência ("hoje"): 03/11/2026 (data real)
 
 **Cliente:** Vi que o Giannini GF-3D tava com 40% off na Semana do Músico. Ainda tá valendo?
 
 > 🔧 `buscar_produtos({"termo": "giannini gf-3d"})`
 > 🔧 `consultar_preco({"produto_id": 96})`
 
-**Empório:** Não, a promoção de 40% da Semana do Músico no Giannini GF-3D Dreadnought Sunburst já acabou. Hoje ele não tem nenhum desconto ativo.  
+**Empório:** Não, a promoção de 40% da Semana do Músico já acabou. Hoje o Giannini GF-3D Dreadnought Sunburst não tem nenhum desconto ativo.  
   
-Além disso, ele está esgotado no momento, ou seja, temporariamente indisponível. O preço atual de tabela é R$ 799,90. No PIX sai por R$ 759,91, e no cartão dá para parcelar em até 7x sem juros de R$ 114,27.  
+Além disso, ele está esgotado no momento. O preço atual é R$ 799,90, ou R$ 759,91 no PIX. No cartão sai em até 7x de R$ 114,27 sem juros.  
   
-Se você quiser algo parecido e que esteja disponível, tenho estas opções:  
-- Shelby SGD-195E Elétrico Aço Sunburst: R$ 799,00 (PIX R$ 759,05). É eletroacústico, com captação e afinador integrado.  
-- Tagima Dallas Tuner Aço Natural: R$ 749,00 (PIX R$ 711,55). É um violão folk com afinador integrado.  
-- Yamaha C70 Nylon Natural: R$ 849,00 (PIX R$ 806,55). É um clássico de nylon, de nível intermediário.  
+Veja alguns violões parecidos que estão disponíveis:  
+- Shelby SGD-195E Elétrico Aço Sunburst: R$ 799,00 (R$ 759,05 no PIX). É eletroacústico, com captação e afinador.  
+- Tagima Dallas Tuner Aço Natural: R$ 749,00 (R$ 711,55 no PIX). É um folk com afinador integrado.  
+- Yamaha C70 Nylon Natural: R$ 849,00 (R$ 806,55 no PIX). É um clássico de nylon, de nível intermediário.  
   
 Quer que eu detalhe algum deles?
 
@@ -24,16 +24,16 @@ Quer que eu detalhe algum deles?
 
 > 🔧 `buscar_produtos({"termo": "shelby sn-7c"})`
 > 🔧 `buscar_produtos({"termo": "shelby 7 cordas"})`
-> 🔧 `consultar_preco({"produto_id": 113})`
+> 🔧 `buscar_produtos({"termo": "violão 7 cordas"})`
 
-**Empório:** O Shelby SN-7C 7 Cordas Nylon Natural não faz mais parte do nosso catálogo, então não dá para comprar.  
+**Empório:** O Shelby SN-7C 7 Cordas Nylon Natural não faz mais parte do catálogo, então não dá para comprar. Temos outros violões de 7 cordas disponíveis:  
   
-As alternativas que o sistema sugeriu são todas de aço, não de nylon, e nenhuma tem 7 cordas:  
-- Yamaha F310 Aço Natural: R$ 699,90 (PIX R$ 664,91)  
-- Tagima Dallas Tuner Aço Natural: R$ 749,00 (PIX R$ 711,55)  
-- Shelby SGD-195E Elétrico Aço Sunburst: R$ 799,00 (PIX R$ 759,05)  
+- Giannini GWNE-7 7 Cordas Nylon Natural: R$ 1.149,00 (R$ 1.091,55 no PIX). É de nylon, para choro e MPB.  
+- Rozini RV-174 7 Cordas Nylon Natural: R$ 1.299,00 (R$ 1.234,05 no PIX). Tem tampo em Spruce.  
+- Tagima TW-7 7 Cordas Aço Natural: R$ 999,00 (R$ 949,05 no PIX). É de cordas de aço.  
+- Rozini RV-175 7 Cordas Elétrico Natural: R$ 1.699,00 (R$ 1.614,05 no PIX). É eletroacústico.  
   
-Se o que você procura é um 7 cordas para choro, posso pesquisar no catálogo outros violões de 7 cordas ou de nylon. Quer que eu faça isso?
+Como o SN-7C era de nylon, os mais parecidos são o Giannini GWNE-7 e o Rozini RV-174. Quer que eu veja parcelamento de algum deles?
 
 **Cliente:** Tá, e o Takamine GD-20, quanto tá?
 
@@ -42,12 +42,10 @@ Se o que você procura é um 7 cordas para choro, posso pesquisar no catálogo o
 
 **Empório:** O Takamine GD20 Dreadnought Natural está disponível.  
   
-- Preço de tabela: R$ 2.199,00  
-- No PIX: R$ 2.089,05 (5% de desconto)  
-- No cartão: até 12x sem juros de R$ 183,25  
+- Preço: R$ 2.199,00  
+- No PIX: R$ 2.089,05, com 5% de desconto  
+- No cartão: até 12x de R$ 183,25 sem juros  
   
-Ele não tem promoção ativa agora. Houve uma "Oferta Especial" de 12%, mas já encerrou.  
+Ele tem tampo sólido em cedro e é ótimo para fingerstyle. Como o valor passa de R$ 2.000,00, dá para combinar formas de pagamento, por exemplo PIX e cartão. Para comprar, é só chamar a equipe no WhatsApp (67) 3321-4500.  
   
-É um violão de aço, com tampo sólido em cedro e corpo dreadnought. Como a compra passa de R$ 2.000,00, dá para combinar formas de pagamento, por exemplo PIX + cartão.  
-  
-Para fechar a compra, o contato é o WhatsApp (67) 3321-4500 ou a loja física. Quer saber do frete para a sua cidade?
+Quer que eu calcule o frete para a sua cidade?

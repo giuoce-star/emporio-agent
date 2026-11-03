@@ -21,7 +21,8 @@ pytest                        # testes (não chamam a API)
 ```
 
 Variáveis do `.env`: `ANTHROPIC_API_KEY` (obrigatória), `MODEL` (padrão
-`claude-haiku-5-5`), `EFFORT` (padrão `medium`) e `MAX_TOKENS` (padrão 4096).
+`claude-haiku-5-5`), `EFFORT` (padrão `medium`), `MAX_TOKENS` (padrão 4096) e
+`REFERENCE_DATE` (data usada como "hoje", AAAA-MM-DD; vazia = data real).
 
 ## Arquitetura
 
@@ -57,8 +58,9 @@ examples/            conversas de exemplo
   caracteres. Cabe com folga no contexto, e o modelo vê todas as regras ao mesmo
   tempo, o que importa porque elas se cruzam (promoção × PIX, defeito × garantia).
   RAG traria o risco de recuperar só parte de uma regra, sem ganho de precisão. O
-  bloco estável do prompt usa *prompt caching*; a data e a hora vão num bloco
-  separado, depois do ponto de cache, para não invalidá-lo.
+  bloco estável do prompt usa *prompt caching*. A data e a hora vão num bloco
+  separado, depois do ponto de cache, fixadas no início da sessão: a API recusa
+  blocos de thinking se o system mudar no meio da conversa.
 - **Regras críticas também reescritas no prompt.** Além do manual bruto, o
   prompt resume as regras de maior risco (separação arrependimento × defeito ×
   garantia, PIX × promoção, escopo, verificação de pedido) e resolve as
@@ -76,32 +78,82 @@ examples/            conversas de exemplo
 - **Reclamação sem tool.** A resposta é padronizada pelo prompt (empatia, pedido
   dos dados, retorno em 24 horas úteis). A conversa fica salva no JSON da sessão.
 
-## Dados: o que foi encontrado e como foi tratado
+## Suposições e inconsistências dos dados
 
-| Problema | Tratamento |
+Os dados de `data/` são fictícios, estáticos e **a fonte de verdade**: os CSVs não
+são alterados. Três princípios guiam o tratamento:
+
+1. **Nada é corrigido em silêncio.** O agente informa o que consta no sistema e,
+   quando é relevante para o cliente, diz que a equipe confirma pelo WhatsApp.
+2. **Defesa no código onde o modelo poderia errar.** As tools sinalizam a
+   inconsistência junto com o dado (`aviso_cadastro`, `aviso_estoque`,
+   `divergencias_no_cadastro`) e dizem como tratá-la.
+3. **"Hoje" é configurável.** `REFERENCE_DATE` no `.env` (AAAA-MM-DD) define a data
+   usada no atraso de entrega, nos prazos de troca e devolução e na data informada
+   ao modelo. Vazia, vale a data real. As promoções não têm data no CSV, então a
+   vigência delas é decidida só por `is_active`, e `REFERENCE_DATE` não as afeta.
+
+Linhas contam o cabeçalho do CSV como linha 1.
+
+### products.csv
+
+| Linha | O que está estranho | Tratamento |
+|---|---|---|
+| 57–66 (ids 135–144) | Nome, descrição e specs se contradizem. Exemplos: o 142 "Korg Synth 1 Pro" tem descrição de um Roland de 88 teclas e specs com 61 teclas; o 137 "Yamaha Bass 3X" tem "5 cordas Ibanez" na descrição e `strings: 4`; o 139 "Yamaha Kit 1" tem descrição de uma Pearl Export | Descrição e specs não vão para o modelo nem entram na busca. A tool devolve `aviso_cadastro`, e o agente informa nome, preço e disponibilidade e diz que a equipe confirma as especificações |
+| 58 (id 136) | `discontinued` com 13 unidades em estoque | O status prevalece: o item não é oferecido e vem com alternativas. `aviso_estoque` faz o agente dizer o que consta, se o cliente insistir |
+| 51 (id 130) | `coming_soon` com 2 em estoque, e já aparece nos pedidos 3 (entregue) e 14 | Igual ao 136. Nos pedidos, o item aparece normalmente, com uma divergência registrada |
+| 5 (id 84) | Nome truncado: "Giannini GN-15 Nylon Cedr Natural" | Mantido exatamente como está. O prompt proíbe completar ou corrigir nomes |
+| 52 (id 145) | Fora de ordem no arquivo (vem antes do 131) | Sem efeito |
+| coluna `specs` | `strings` muda de sentido (`nylon`/`steel` em violões, `"6"`/`"4"` em guitarras e baixos). Cores em PT e EN (`Preto` nas linhas 10 e 25, `Black` em outras) | Repassado como está; sem impacto nas regras |
+| 17 (id 96) | `active` com estoque 0 | Não é erro: é "esgotado", com alternativas |
+
+### categories.csv
+
+| Linha | O que está estranho | Tratamento |
+|---|---|---|
+| 7–9 | Sopros (madeiras e metais) e cordas orquestrais não têm nenhum produto | O prompt lista a contagem real por categoria; o agente diz que não há itens cadastrados |
+| 3 | Baixos "elétricos e acústicos", mas não há baixo acústico | Fala só do que a busca retorna |
+
+### promotions.csv
+
+| Linha | O que está estranho | Tratamento |
+|---|---|---|
+| todas | Não há datas de vigência, só `is_active` | A vigência é `is_active`. Promoções inativas aparecem como "encerradas" quando o cliente pergunta |
+| 7/24, 9/23, 10/26 | Produtos 93, 96 e 99 têm duas promoções cada (todas inativas) | Se houver mais de uma ativa, vale a maior (não são cumulativas) |
+| 2, 18 | Black Friday com 10% (o manual diz 15–30%); Aniversário com 30% (o manual diz 10–25%) | Ambas inativas, sem efeito |
+
+### orders.csv e order_items.csv
+
+| Linha | O que está estranho | Tratamento |
+|---|---|---|
+| orders 4 e 21 (pedidos 3 e 20) | O total gravado não bate com a soma dos itens pelos preços atuais (3450 contra 3498; 1400 contra 1488). `order_items` não guarda preço unitário | Repassa o total gravado e registra a divergência. O agente só a menciona se o cliente questionar o valor |
+| orders 2, 6, 11, 14, 18 (pedidos 1, 5, 10, 13, 17) | Pedidos no PIX pelo preço de tabela, sem os 5% | Mesmo tratamento |
+| orders 10, 17, 19 (pedidos 9, 16, 18) | Parcela abaixo do mínimo atual: 6x de R$ 58,32, 6x de R$ 71,65 e 12x de R$ 38,33 | Informa a forma de pagamento gravada; registra a divergência |
+| orders 2–9 | Pedidos de Campo Grande com rastreio dos Correios e previsão de 10 a 15 dias, quando o manual diz motoboy em 1 a 3 dias úteis | Informa o rastreio e a previsão gravados, sem afirmar qual modalidade foi usada |
+| orders 9–17 | Datas de fev/mar 2026 com status em aberto; contra a data real, tudo está muito atrasado | `REFERENCE_DATE` permite avaliar contra outra data. A tool sinaliza atraso e o agente orienta o WhatsApp |
+
+### customers.csv
+
+| Linha | O que está estranho | Tratamento |
+|---|---|---|
+| 12 e 44 | Clientes 11 e 43 com o mesmo e-mail | A verificação confere o contato com o cliente **daquele pedido**, então ninguém vê pedido de outra pessoa |
+| 32–51 | Nomes sem acento ("Joao", "Leticia") | Sem impacto: a verificação usa e-mail ou telefone |
+
+### Manual de políticas (PDF)
+
+| Ponto | Suposição |
 |---|---|
-| Produtos 135–144 (baixos, baterias, teclados): nome, descrição e specs se contradizem (ex.: "Korg Synth 1 Pro" descrito como "Roland de 88 teclas", specs com 61 teclas) | Nome, preço, estoque e status são tratados como confiáveis. Descrição e specs desses itens não vão para o modelo nem entram na busca |
-| `discontinued` com estoque (136); `active` com estoque 0 (96); `coming_soon` (130) que já aparece em pedidos | O status manda: descontinuado e "em breve" não recebem preço nem estoque e vêm com alternativas; esgotado vem com alternativas |
-| Total do pedido diferente da soma dos itens (pedidos 3 e 20) e pedidos PIX sem os 5% | O agente informa o `total_brl` gravado e nunca recalcula pedidos |
-| Pedidos de fev/mar 2026 ainda `pending`, `confirmed` ou `shipped` com previsão vencida | A data real é usada. A tool sinaliza o atraso, e o agente é transparente e encaminha para a equipe |
-| E-mail compartilhado pelos clientes 11 e 43 | A verificação confere o contato com o cliente **daquele pedido**, então o e-mail duplicado não dá acesso ao pedido de outra pessoa |
-| Modelos com hífen e espaço variáveis ("GD20", "GN-15") e acentos | A busca normaliza acentos e caixa, trata plural simples e compara também uma versão sem espaços ("gd 20" = "gd20") |
-| Categorias 6, 7 e 8 (sopros, cordas orquestrais) sem produtos; catálogo de 65 itens contra os "300+" do manual | O prompt lista as categorias com a contagem real, e o agente fala só do que está no sistema |
-| Promoções sem datas de vigência; três produtos com duas promoções | `is_active` define a vigência. Se houver mais de uma promoção ativa, vale a maior (não são cumulativas) |
+| (67) 3341-4444 aparece como "Telefone / WhatsApp" e (67) 3321-4500 como o WhatsApp | 3321-4500 para o WhatsApp, 3341-4444 como telefone fixo |
+| E-mail com e sem acento | `contato@emporiodamusica.com.br` |
+| A tabela diz parcela mínima de R$ 100 até 12x; a seção 3.1 detalha faixas | Vale a 3.1: até 3x com mínimo de R$ 50 (leitura de "sem valor mínimo, exceto abaixo de R$ 50"), 4x a 6x com R$ 80, 7x a 12x com R$ 100 |
+| "Frete grátis acima de R$ 500"; municípios da região metropolitana não listados | R$ 500,00 exatos pagam R$ 35. Só Campo Grande conta como metropolitana; as demais cidades recebem a orientação de cotação por CEP |
+| Arrependimento vale só para "compras online", mas os pedidos não dizem o canal | O agente pergunta ao cliente; na dúvida, a equipe confirma |
+| "Venda final" em liquidação não é elegível para troca, mas nenhum dado marca isso | O agente avisa que a equipe confirma a elegibilidade |
+| Prazo da troca por preferência ("até 7 dias") não diz a partir de quando | Conta a partir do recebimento, como o arrependimento |
+| Catálogo de "300+" instrumentos, incluindo sopros e cordas orquestrais | O sistema tem 65 itens; o agente fala só do que está nele |
 
-## Suposições
+### Outras suposições
 
-- **Contatos:** o manual dá (67) 3341-4444 como "Telefone / WhatsApp" na tabela e
-  (67) 3321-4500 como WhatsApp na seção de atendimento. Usamos 3321-4500 para o
-  WhatsApp e 3341-4444 como telefone fixo. O e-mail aparece com e sem acento;
-  usamos `contato@emporiodamusica.com.br`.
-- **Parcelamento:** a tabela fala em parcela mínima de R$ 100 para até 12x, e a
-  seção 3.1 detalha faixas. Vale a seção 3.1: até 3x com parcela mínima de R$ 50
-  (leitura de "sem valor mínimo, exceto abaixo de R$ 50"), 4x a 6x com R$ 80, e
-  7x a 12x com R$ 100.
-- **Frete:** "acima de R$ 500" é estrito, então R$ 500,00 exatos pagam R$ 35. Como
-  o manual não lista os municípios da região metropolitana, só Campo Grande é
-  tratada como tal; as demais cidades recebem a orientação de cotação por CEP.
 - **Prazos:** arrependimento e troca por preferência contam 7 dias corridos a
   partir do recebimento. Troca por defeito conta 30 dias a partir da compra (ou do
   recebimento, se a data da compra não for informada, o que é mais favorável ao
@@ -109,7 +161,8 @@ examples/            conversas de exemplo
 - **Verificação de identidade:** número do pedido + e-mail ou telefone do
   cadastro. A resposta de falha é a mesma para pedido inexistente e dado errado,
   para não revelar quais pedidos existem.
-- **Fuso:** UTC−4 fixo (MS não tem horário de verão desde 2019).
+- **Fuso:** UTC−4 fixo (MS não tem horário de verão desde 2019). Com
+  `REFERENCE_DATE` definida, o modelo recebe só a data, sem hora.
 
 ## Limitações
 
@@ -126,10 +179,10 @@ examples/            conversas de exemplo
 
 ## Testes
 
-`pytest` roda 35 testes sem chamar a API: cálculo de preço (PIX, promoção,
+`pytest` roda 43 testes sem chamar a API: cálculo de preço (PIX, promoção,
 arredondamento, parcelas, frete), busca (variações de escrita, filtros,
 acessórios, itens inconsistentes), pedidos (verificação, atraso, cancelamento),
-prazos de troca e o loop do agente com um LLM falso (histórico, system estável na sessão, desfazer o turno
+prazos de troca, tratamento das inconsistências dos dados e `REFERENCE_DATE`, e o loop do agente com um LLM falso (histórico, system estável na sessão, desfazer o turno
 em erro da API, limite de rodadas).
 
 ### Teste de fumaça com o modelo

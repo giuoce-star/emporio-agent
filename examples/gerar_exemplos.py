@@ -14,7 +14,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from agente.agente import Agente  # noqa: E402
-from agente.config import MODEL  # noqa: E402
+from agente.config import MODEL, REFERENCE_DATE, hoje  # noqa: E402
 from agente.sessao import Sessao  # noqa: E402
 
 PASTA = Path(__file__).resolve().parent
@@ -83,7 +83,9 @@ ROTEIROS = [
 
 def gerar(nome: str, titulo: str, descricao: str, mensagens: list[str]) -> None:
     linhas = [f"# {titulo}", "", f"_{descricao}_", "",
-              f"Modelo: `{MODEL}` · gerado em {datetime.now():%d/%m/%Y %H:%M}", ""]
+              f"Modelo: `{MODEL}` · gerado em {datetime.now():%d/%m/%Y %H:%M} · "
+              f"data de referência (\"hoje\"): {hoje():%d/%m/%Y}"
+              f"{'' if REFERENCE_DATE else ' (data real)'}", ""]
     chamadas: list[str] = []
 
     def registrar(tool: str, argumentos: dict, resultado: str) -> None:
