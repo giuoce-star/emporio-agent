@@ -234,7 +234,13 @@ só uma). Cada uma mostra as tools chamadas a cada mensagem e a data usada como 
 - **Condições inventadas.** O agente ofereceu "retirar na loja", que o manual não
   prevê. O prompt agora proíbe oferecer serviços que não estejam nas regras.
 
-## Uso do Claude Code
+## Uso de assistentes de código
+
+Usei o Claude em dois lugares. No chat (claude.ai), para planejar: discuti a
+arquitetura, o escopo para o prazo de um dia, o provedor e o custo, escrevi o
+CLAUDE.md com as decisões e revisei as entregas. No Claude Code, para implementar:
+ele inspecionou os dados, propôs a estrutura, escreveu o código e os testes e fez
+os commits.
 
 O Claude Code foi usado como par de programação durante todo o desafio, com as
 decisões de arquitetura registradas antes em um `CLAUDE.md`:
