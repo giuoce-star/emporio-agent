@@ -6,7 +6,7 @@ nome e dos argumentos que o modelo enviou.
 
 import json
 import re
-from datetime import date
+from datetime import date, timedelta
 
 from agente import precos
 from agente.dados import Dados, carregar, normalizar
@@ -204,6 +204,60 @@ def calcular_frete(cidade: str, valor_pedido: float) -> dict:
     return precos.calcular_frete(cidade, valor_pedido)
 
 
+def prazos_troca_devolucao(
+    data_recebimento: str, data_compra: str = "", hoje: date | None = None
+) -> dict:
+    """Situação de cada prazo do manual, em dias corridos, a partir das datas informadas."""
+    hoje = hoje or date.today()
+    try:
+        recebimento = date.fromisoformat(data_recebimento)
+        compra = date.fromisoformat(data_compra) if data_compra else None
+    except ValueError:
+        return {"erro": "Datas devem estar no formato AAAA-MM-DD."}
+    if recebimento > hoje or (compra and compra > hoje):
+        return {"erro": "As datas informadas estão no futuro; confirme com o cliente."}
+
+    def prazo(inicio: date, dias: int) -> dict:
+        limite = inicio + timedelta(days=dias)
+        return {
+            "conta_a_partir_de": inicio.strftime("%d/%m/%Y"),
+            "prazo_dias": dias,
+            "data_limite": limite.strftime("%d/%m/%Y"),
+            "dias_decorridos": (hoje - inicio).days,
+            "dentro_do_prazo": hoje <= limite,
+        }
+
+    resultado = {
+        "hoje": hoje.strftime("%d/%m/%Y"),
+        "arrependimento": {
+            **prazo(recebimento, 7),
+            "condicoes": "Compra online; embalagem original, sem uso, com acessórios e manuais. "
+            "Frete de devolução por conta da loja; reembolso na mesma forma de pagamento em até 10 dias úteis.",
+        },
+        "troca_por_preferencia": {
+            **prazo(recebimento, 7),
+            "condicoes": "Produto em perfeito estado e na embalagem original, sujeito à "
+            "disponibilidade do item desejado; diferenças de valor cobradas ou reembolsadas.",
+        },
+        "troca_por_defeito_na_loja": {
+            **prazo(compra or recebimento, 30),
+            "condicoes": "Defeito de fabricação; não cobre mau uso, quedas, umidade ou modificações. "
+            "Depois do prazo, o caminho é a garantia (a loja pode intermediar com o fabricante).",
+        },
+        "garantia_legal": {
+            **prazo(recebimento, 90),
+            "condicoes": "Defeitos de fabricação, pelo Código de Defesa do Consumidor. A garantia "
+            "do fabricante (6 meses a 2 anos, conforme o certificado) pode se somar a ela.",
+        },
+    }
+    if not compra:
+        resultado["observacao"] = (
+            "Data da compra não informada: o prazo de troca por defeito foi contado a partir do "
+            "recebimento. Confirme a data da compra se o resultado estiver no limite."
+        )
+    return resultado
+
+
 def _so_digitos(texto: str) -> str:
     return re.sub(r"\D", "", texto or "")
 
@@ -336,6 +390,28 @@ SCHEMAS = [
         },
     },
     {
+        "name": "prazos_troca_devolucao",
+        "description": (
+            "Calcula, para as datas informadas, a situação de cada prazo: devolução por "
+            "arrependimento, troca por preferência, troca por defeito na loja e garantia legal. "
+            "Use sempre que o cliente quiser devolver ou trocar algo, em vez de contar dias."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "data_recebimento": {
+                    "type": "string",
+                    "description": "Data em que o cliente recebeu o produto, AAAA-MM-DD.",
+                },
+                "data_compra": {
+                    "type": "string",
+                    "description": "Data da compra, AAAA-MM-DD, se o cliente souber.",
+                },
+            },
+            "required": ["data_recebimento"],
+        },
+    },
+    {
         "name": "status_pedido",
         "description": (
             "Consulta o status de um pedido. Exige o número do pedido E o e-mail ou telefone "
@@ -356,6 +432,7 @@ _FUNCOES = {
     "buscar_produtos": buscar_produtos,
     "consultar_preco": consultar_preco,
     "calcular_frete": calcular_frete,
+    "prazos_troca_devolucao": prazos_troca_devolucao,
     "status_pedido": status_pedido,
 }
 
