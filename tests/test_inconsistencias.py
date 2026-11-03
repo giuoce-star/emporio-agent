@@ -63,5 +63,25 @@ def test_cadastro_conflitante_e_estoque_apesar_do_status():
     assert "aviso_estoque" not in tools.consultar_preco(113)  # descontinuado sem estoque
 
 
+def test_dado_inconsistente_sem_hipotese_sobre_a_causa():
+    # A regra está no prompt...
+    from agente.prompt import PERSONA_E_REGRAS
+
+    regras = " ".join(PERSONA_E_REGRAS.split())
+    assert "diga que não consegue explicar a divergência" in regras
+    assert "Não levante hipóteses sobre a causa" in regras
+    # ...e vem junto de cada aviso de dado inconsistente devolvido pelas tools.
+    pedido = tools.status_pedido(3, "isabela.moreira@jmail.com", hoje=HOJE)
+    produto = tools.consultar_preco(136)
+    for orientacao in (
+        pedido["como_tratar_divergencias"],
+        produto["aviso_cadastro"],
+        produto["aviso_estoque"],
+    ):
+        assert tools.SEM_HIPOTESE in orientacao
+    # As divergências descrevem só o que consta, sem sugerir causa.
+    assert "época" not in " ".join(pedido["divergencias_no_cadastro"])
+
+
 def test_nome_truncado_mantido_como_esta():
     assert tools.consultar_preco(84)["nome"] == "Giannini GN-15 Nylon Cedr Natural"

@@ -27,6 +27,12 @@ FORMAS_PAGAMENTO = {
     "credit_12x": "Cartão de crédito em 12x",
 }
 
+# Orientação comum a todo dado inconsistente: mostrar o que consta, sem explicar a causa.
+SEM_HIPOTESE = (
+    "Diga que não consegue explicar a divergência, indique a equipe pelo WhatsApp "
+    "(67) 3321-4500 e não levante hipóteses sobre a causa."
+)
+
 PALAVRAS_VAZIAS = set(
     "a o as os um uma uns umas de da do das dos e em no na nos nas para pra pro com "
     "sem por que qual quais tem voces voce vcs quero queria gostaria procuro procurando "
@@ -200,15 +206,15 @@ def consultar_preco(produto_id: int, dados: Dados | None = None) -> dict:
     else:
         resultado["aviso_cadastro"] = (
             "O cadastro deste item tem informações conflitantes (o nome não bate com a "
-            "descrição e as especificações). Informe só nome, preço e disponibilidade e diga "
-            "que a equipe confirma as especificações pelo WhatsApp (67) 3321-4500."
+            "descrição e as especificações). Informe só nome, preço e disponibilidade. Se o "
+            f"cliente perguntar das especificações: {SEM_HIPOTESE}"
         )
 
     if p["status"] != "active" and p["stock_quantity"] > 0:
         resultado["aviso_estoque"] = (
             f"O sistema registra {int(p['stock_quantity'])} unidade(s) em estoque apesar do "
             "status. Não ofereça o item; se o cliente insistir, diga que consta esse estoque "
-            "no sistema e que a equipe confirma se ainda é possível comprar."
+            f"no sistema. {SEM_HIPOTESE}"
         )
 
     if not _vendavel(p):
@@ -353,7 +359,7 @@ def status_pedido(
         resultado["como_tratar_divergencias"] = (
             "Os valores acima são os que constam no sistema: repasse-os assim, sem corrigir. "
             "Só mencione as divergências se o cliente perguntar sobre valor, pagamento ou "
-            "itens; nesse caso, diga o que consta e que a equipe confirma pelo WhatsApp."
+            f"itens; nesse caso, diga o que consta. {SEM_HIPOTESE}"
         )
     return resultado
 
@@ -367,7 +373,7 @@ def _divergencias_pedido(dados: Dados, pedido, itens) -> list[str]:
     if total != soma:
         divergencias.append(
             f"O total gravado ({precos.formatar_brl(total)}) difere da soma dos itens pelos "
-            f"preços atuais ({precos.formatar_brl(soma)}); o sistema não guarda o preço da época."
+            f"preços atuais ({precos.formatar_brl(soma)})."
         )
     elif pedido["payment_method"] == "pix":
         divergencias.append(
