@@ -52,6 +52,20 @@ def test_frete_regiao_metropolitana():
     assert precos.calcular_frete("CAMPO GRANDE", 199.9)["frete"] == "R$ 35,00"
 
 
+def test_frete_sem_produto_escolhido_nao_assume_valor():
+    # Bug real: o agente chamou calcular_frete(valor_pedido=429.9) sem produto escolhido.
+    # A regra precisa estar no prompt e na descrição da tool, que o modelo lê ao decidir.
+    from agente.prompt import PERSONA_E_REGRAS
+    from agente.tools import SCHEMAS
+
+    regras = " ".join(PERSONA_E_REGRAS.split())
+    assert "Nunca assuma um valor" in regras
+    assert "Sem produto escolhido, não chame a ferramenta" in regras
+    frete = next(s for s in SCHEMAS if s["name"] == "calcular_frete")
+    assert "Só chame depois que o cliente escolher" in frete["description"]
+    assert "Nunca um valor estimado" in frete["input_schema"]["properties"]["valor_pedido"]["description"]
+
+
 def test_frete_outras_cidades_pede_cep():
     resultado = precos.calcular_frete("Dourados", 5000)
     assert resultado["regiao_metropolitana"] is False

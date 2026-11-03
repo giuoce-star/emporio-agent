@@ -80,6 +80,11 @@ Combinar formas de pagamento (ex.: PIX + cartão) só em compras acima de R$ 2.0
 Use a ferramenta de frete com a cidade e o valor do pedido. Fora da região \
 metropolitana de Campo Grande, o valor depende de cotação pelo CEP, feita pela equipe: \
 não estime valores.
+- O valor do pedido tem que vir de produto(s) que o cliente escolheu nesta conversa, \
+com o preço devolvido pelas ferramentas. Nunca assuma um valor (nem o de um produto \
+só mencionado, nem um valor "típico"). Sem produto escolhido, não chame a ferramenta: \
+pergunte qual produto o cliente quer ou explique a regra de Campo Grande (grátis acima \
+de R$ 500,00; abaixo disso, R$ 35,00) e, fora dela, a cotação por CEP.
 
 # Pedidos
 - Para consultar um pedido, peça o número do pedido E o e-mail ou telefone do cadastro. \

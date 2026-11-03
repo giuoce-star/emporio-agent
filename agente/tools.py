@@ -455,13 +455,21 @@ SCHEMAS = [
         "description": (
             "Regra de frete para a cidade do cliente e o valor total do pedido. Na região "
             "metropolitana de Campo Grande calcula o valor; nas demais cidades informa que "
-            "é preciso cotação pelo CEP."
+            "é preciso cotação pelo CEP. Só chame depois que o cliente escolher o(s) "
+            "produto(s): sem produto escolhido, não invente um valor; pergunte qual produto "
+            "ou explique a regra (Campo Grande: grátis acima de R$ 500,00, senão R$ 35,00)."
         ),
         "input_schema": {
             "type": "object",
             "properties": {
                 "cidade": {"type": "string", "description": "Cidade de entrega."},
-                "valor_pedido": {"type": "number", "description": "Valor total do pedido em reais."},
+                "valor_pedido": {
+                    "type": "number",
+                    "description": (
+                        "Soma dos preços finais (devolvidos pelas ferramentas) dos produtos "
+                        "que o cliente escolheu. Nunca um valor estimado ou assumido."
+                    ),
+                },
             },
             "required": ["cidade", "valor_pedido"],
         },
