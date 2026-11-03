@@ -27,6 +27,23 @@ def test_busca_por_categoria_e_preco_final():
     assert set(ids(resultado)) == {116, 118, 119}
 
 
+def test_filtro_de_categoria_com_plural_em_oes_e_acentos():
+    # Bug real: categoria="Violões" retornava 0 ("violao" não é substring de "violoes").
+    por_termo = tools.buscar_produtos(termo="violão", limite=15)["total_encontrado"]
+    for categoria in ["Violões", "violões", "violoes", "violão", "VIOLAO"]:
+        resultado = tools.buscar_produtos(categoria=categoria, limite=15)
+        assert resultado["total_encontrado"] == por_termo == 35, categoria
+        assert {p["categoria"] for p in resultado["produtos"]} == {"Violões"}
+
+
+def test_filtro_de_categoria_nomes_compostos_e_vazias():
+    assert tools.buscar_produtos(categoria="Baterias e Percussão")["total_encontrado"] == 3
+    assert tools.buscar_produtos(categoria="percussão")["total_encontrado"] == 3
+    assert tools.buscar_produtos(categoria="teclado")["total_encontrado"] == 3
+    assert tools.buscar_produtos(categoria="Guitarras")["total_encontrado"] == 5
+    assert tools.buscar_produtos(categoria="sopro")["total_encontrado"] == 0  # sem produtos
+
+
 def test_filtro_de_preco_usa_preco_promocional():
     # 121 custa 549,00 de tabela, 439,20 com a promoção de 20%
     assert 121 in ids(tools.buscar_produtos(categoria="ukulele", preco_max=450, limite=15))

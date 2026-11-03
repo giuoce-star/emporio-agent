@@ -122,8 +122,15 @@ def buscar_produtos(
     produtos = dados.produtos
 
     if categoria:
-        alvo = _radical(normalizar(categoria))
-        produtos = produtos[produtos["categoria"].map(lambda c: alvo in normalizar(c))]
+        # Mesma normalização do termo (acentos, palavras vazias e plural) nos dois
+        # lados: "Violões" -> violao e o nome cadastrado "Violões" -> violao.
+        alvos = _tokens(categoria)
+
+        def casa_categoria(nome: str) -> bool:
+            tokens_nome = _tokens(nome)
+            return all(any(a in t for t in tokens_nome) for a in alvos)
+
+        produtos = produtos[produtos["categoria"].map(casa_categoria)]
 
     tokens = _tokens(termo)
     parcial = False
