@@ -75,7 +75,7 @@ examples/            example conversations
   deterministic rules that the model would get wrong.
 - **Provider isolated in `llm.py`.** The loop only knows `LLM.responder` and the
   message constructors. Switching providers means rewriting that file.
-- **Model:** `claude-haiku-5-5` during development, for cost reasons (US$ 5 budget).
+- **Model:** `claude-haiku-5-5` during development, for cost reasons (US$5 budget).
   `claude-sonnet-5-5` is reserved for the final validation of the hard scenarios and
   for the example conversations. It is configurable through `MODEL`.
 - **Complaints handled without a tool.** The reply is standardized by the prompt (empathy,
@@ -189,8 +189,15 @@ Line numbers count the CSV header as line 1.
 - The agent guides but does not perform actions: it does not open exchanges, does not
   record complaints in a system and does not close sales. It points the customer to WhatsApp for that. In
   production, this would become ticket-opening tools.
-- Search is lexical (tokens, simple plurals, no spaces). Synonyms ("acústico" for
-  "folk") and typos are left to the model, which rephrases the search.
+- Search is lexical: it ignores accents and case, splits the query into terms, handles
+  simple plurals and looks for each term as a substring of the text, also in a version
+  without spaces (which is why "gn15" finds "GN-15"). It first requires all terms in
+  the name, category or description (the description is not used for products
+  135–144). If no product has them all, it accepts a partial match, in name and
+  category only. Synonyms ("acústico" for "folk") and typos are left to the model,
+  which rephrases the search. Since matching is by substring, a query like "GN-15"
+  also returns an unrelated product (Kala KA-15S, because "gn" appears in "mogno" and
+  "15" in the model name).
 - There is no shipping quote by postal code (CEP), nor a calculation for a cart with
   several products beyond the sum given to `calcular_frete`.
 - Identity verification is minimal (one known factor). There is no attempt limit.

@@ -183,8 +183,15 @@ Linhas contam o cabeçalho do CSV como linha 1.
 - O agente orienta, mas não executa ações: não abre trocas, não registra
   reclamações num sistema e não fecha vendas. Indica o WhatsApp para isso. Em
   produção, isso viraria tools de abertura de ticket.
-- A busca é lexical (tokens, plural simples, sem espaços). Sinônimos ("acústico"
-  para "folk") e erros de digitação ficam a cargo do modelo, que reformula a busca.
+- A busca é lexical: ignora acentos e maiúsculas, divide a consulta em termos, trata
+  plural simples e procura cada termo como trecho do texto, também em uma versão sem
+  espaços (por isso "gn15" encontra "GN-15"). Primeiro exige todos os termos em nome,
+  categoria ou descrição (a descrição não é usada nos produtos 135–144). Se nenhum
+  produto tiver todos, aceita casamento parcial, só em nome e categoria. Sinônimos
+  ("acústico" para "folk") e erros de digitação ficam a cargo do modelo, que reformula
+  a busca. Como a comparação é por trecho, uma busca como "GN-15" também traz um
+  produto sem relação (Kala KA-15S, porque "gn" aparece em "mogno" e "15" no nome do
+  modelo).
 - Não há cotação de frete por CEP nem cálculo de carrinho com vários produtos além
   da soma informada ao `calcular_frete`.
 - A verificação de identidade é mínima (um fator conhecido). Não há limite de
@@ -238,11 +245,11 @@ só uma). Cada uma mostra as tools chamadas a cada mensagem e a data usada como 
 
 | Arquivo | O que demonstra |
 |---|---|
-| [01](examples/01_promocao_pix_parcelas_frete.md) | Informações gerais da loja, promoção ativa, PIX, parcelamento e frete |
-| [02](examples/02_devolucao_arrependimento_x_defeito.md) | Devolução por arrependimento fora dos 7 dias; o cliente revela um defeito e o caso passa para troca por defeito (30 dias) e garantia legal |
-| [03](examples/03_esgotado_promocao_expirada_descontinuado.md) | Promoção expirada, produto esgotado com alternativas, item descontinuado com outros violões de 7 cordas, preço de produto sem promoção ativa |
-| [04](examples/04_pedido_verificacao_reclamacao.md) | Verificação de identidade que falha e depois passa, pedido parado há meses, reclamação com retorno em 24 horas úteis |
-| [05](examples/05_escopo_catalogo_e_tentativa_de_desconto.md) | Categoria sem produtos (sopro), acessório, pedido de desconto indevido, tentativa de extrair o prompt |
+| [01_promocao_pix_parcelas_frete.md](examples/01_promocao_pix_parcelas_frete.md) | Informações gerais da loja, promoção ativa, PIX, parcelamento e frete |
+| [02_devolucao_arrependimento_x_defeito.md](examples/02_devolucao_arrependimento_x_defeito.md) | Devolução por arrependimento fora dos 7 dias; o cliente revela um defeito e o caso passa para troca por defeito (30 dias) e garantia legal |
+| [03_esgotado_promocao_expirada_descontinuado.md](examples/03_esgotado_promocao_expirada_descontinuado.md) | Promoção expirada, produto esgotado com alternativas, item descontinuado com outros violões de 7 cordas, preço de produto sem promoção ativa |
+| [04_pedido_verificacao_reclamacao.md](examples/04_pedido_verificacao_reclamacao.md) | Verificação de identidade que falha e depois passa, pedido parado há meses, reclamação com retorno em 24 horas úteis |
+| [05_escopo_catalogo_e_tentativa_de_desconto.md](examples/05_escopo_catalogo_e_tentativa_de_desconto.md) | Categoria sem produtos (sopro), acessório, pedido de desconto indevido, tentativa de extrair o prompt |
 
 ### Problemas encontrados ao gerar os exemplos
 
