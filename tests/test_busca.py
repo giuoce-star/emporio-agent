@@ -62,6 +62,32 @@ def test_casamento_parcial_ignora_descricao():
     assert parcial["total_encontrado"] > 0 and "em parte" in parcial["observacao"]
 
 
+def _valor(preco: str) -> float:
+    return float(preco.removeprefix("R$ ").replace(".", "").replace(",", "."))
+
+
+def test_ordem_por_preco_final_disponiveis_primeiro():
+    resultado = tools.buscar_produtos("7 cordas", limite=15)
+    produtos = resultado["produtos"]
+    disponiveis = [p for p in produtos if p["disponibilidade"] == "disponível"]
+    # disponíveis formam um bloco contínuo no início
+    assert produtos[: len(disponiveis)] == disponiveis
+    assert produtos[-1]["produto_id"] == 113  # descontinuado no fim
+    precos = [_valor(p["preco_final"]) for p in disponiveis]
+    assert precos == sorted(precos)
+
+
+def test_ordem_usa_preco_promocional():
+    # Ohana CK-20 (121): R$ 549,00 de tabela, R$ 439,20 com promoção -> vem antes do
+    # Kalani KAL-500C (122), de R$ 479,00, que custaria menos pela tabela.
+    produtos = tools.buscar_produtos(categoria="ukulele", limite=15)["produtos"]
+    ids_ordem = [p["produto_id"] for p in produtos]
+    assert ids_ordem.index(121) < ids_ordem.index(122)
+    assert ids_ordem[-1] == 130  # "em breve" (sem preço) vai para o fim
+    precos = [_valor(p["preco_final"]) for p in produtos if "preco_final" in p]
+    assert precos == sorted(precos)
+
+
 def test_vendaveis_aparecem_primeiro():
     resultado = tools.buscar_produtos("7 cordas", limite=15)
     disponibilidades = [p["disponibilidade"] for p in resultado["produtos"]]

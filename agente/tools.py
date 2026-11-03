@@ -158,9 +158,13 @@ def buscar_produtos(
             filtro &= finais <= preco_max
         produtos = produtos[filtro]
 
-    # Vendáveis primeiro, preservando a ordem de relevância dentro de cada grupo.
-    produtos = produtos.assign(_vendavel=produtos.apply(_vendavel, axis=1) if len(produtos) else [])
-    produtos = produtos.sort_values("_vendavel", ascending=False, kind="stable")
+    # Disponíveis primeiro; dentro de cada grupo, preço final (com promoção) crescente.
+    # O modelo apresenta na ordem recebida, então a ordem é decidida aqui.
+    if len(produtos):
+        produtos = produtos.assign(
+            _vendavel=produtos.apply(_vendavel, axis=1),
+            _preco_final=produtos.apply(lambda p: _preco_final(dados, p), axis=1),
+        ).sort_values(["_vendavel", "_preco_final"], ascending=[False, True], kind="stable")
 
     limite = max(1, min(int(limite), 15))
     resultado = {
