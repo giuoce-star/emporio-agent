@@ -234,8 +234,8 @@ só uma). Cada uma mostra as tools chamadas a cada mensagem e a data usada como 
 
 - **Prompt de sistema precisa ser idêntico em toda a conversa.** A API recusou (400)
   um bloco de thinking porque a hora no system tinha mudado entre duas mensagens.
-  A data e a hora agora são fixadas no início da sessão e salvas no JSON. O Haiku
-  não expôs o problema no teste de fumaça porque o minuto não virou entre as mensagens.
+  A data e a hora agora são fixadas no início da sessão e salvas no JSON. O problema
+  não apareceu no teste de fumaça com o Haiku.
 - **Busca parcial trazia ruído.** "saxofone alto" retornava um violão com "volume
   alto" na descrição. O casamento parcial passou a considerar só nome e categoria.
 - **Condições inventadas.** O agente ofereceu "retirar na loja", que o manual não

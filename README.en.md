@@ -238,8 +238,7 @@ one). Each one shows the tools called at each message and the date used as "toda
 - **The system prompt must be identical throughout the conversation.** The API rejected
   (400) a thinking block because the time in the system prompt had changed between two
   messages. The date and time are now fixed at the start of the session and saved in the
-  JSON. Haiku did not expose the problem in the smoke test because the minute did not
-  roll over between messages.
+  JSON. The problem did not appear in the smoke test with Haiku.
 - **Partial search brought noise.** "saxofone alto" returned an acoustic guitar with
   "volume alto" in its description. Partial matching now considers only name and
   category.
