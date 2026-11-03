@@ -172,7 +172,7 @@ Line numbers count the CSV header as line 1.
 ## Limitations
 
 - The agent guides but does not perform actions: it does not open exchanges, does not
-  record complaints in a system and does not close sales. It refers to WhatsApp. In
+  record complaints in a system and does not close sales. It points the customer to WhatsApp for that. In
   production, this would become ticket-opening tools.
 - Search is lexical (tokens, simple plurals, no spaces). Synonyms ("acústico" for
   "folk") and typos are left to the model, which rephrases the search.

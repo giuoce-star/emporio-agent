@@ -167,7 +167,7 @@ Linhas contam o cabeçalho do CSV como linha 1.
 ## Limitações
 
 - O agente orienta, mas não executa ações: não abre trocas, não registra
-  reclamações num sistema e não fecha vendas. Encaminha para o WhatsApp. Em
+  reclamações num sistema e não fecha vendas. Indica o WhatsApp para isso. Em
   produção, isso viraria tools de abertura de ticket.
 - A busca é lexical (tokens, plural simples, sem espaços). Sinônimos ("acústico"
   para "folk") e erros de digitação ficam a cargo do modelo, que reformula a busca.
